@@ -5,7 +5,9 @@
 # Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
-
+import tensorflow as tf
+with tf.Session():
+    pass
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
@@ -182,6 +184,7 @@ class QMainScreen(QMainWindow):
         self.scene = graphicsScene()
         self.ui.graphicsViewBoard.setScene(self.scene)
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
+        self.startButton_click()
 
     def startButton_click(self):
         global game, board, turn, n1, args1, mcts1, mctsplayer
@@ -189,9 +192,9 @@ class QMainScreen(QMainWindow):
         game = OthelloGame(8)
         board = game.getInitBoard()
         n1 = NNet(game)
-        n1.load_checkpoint('weights/', '8x8x60_best.pth.tar')
+        n1.load_checkpoint('ai/weights/', '8x8x60_best.pth.tar')
         args1 = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
-        mcts1 = MCTS(g, n1, args1)
+        mcts1 = MCTS(game, n1, args1)
         mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
         pen = QtGui.QPen(QtCore.Qt.black)
@@ -228,16 +231,18 @@ class graphicsScene(QtWidgets.QGraphicsScene):
         y = int(event.scenePos().y() // 62)
         action = x * 8 + y
         valid = game.getValidMoves(board, turn)
-        if valid[action] == 0:
-            return
+        if np.sum(valid[:-1]) > 0:
+            if valid[action] == 0:
+                return
 
-        pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
-        if turn == 1:
-            self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-        elif turn == -1:
-            self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
-        board, turn = game.getNextState(board, turn, action)
-
+            pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
+            if turn == 1:
+                self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+            elif turn == -1:
+                self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+            board, turn = game.getNextState(board, turn, action)
+        else:
+            turn *= -1
         action = mctsplayer(game.getCanonicalForm(board, turn))
         board, turn = game.getNextState(board, turn, action)
 
