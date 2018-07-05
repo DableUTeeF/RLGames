@@ -196,7 +196,7 @@ class QMainScreen(QMainWindow):
         self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
         self.startButton_click()
 
-    def updateText(self, event):
+    def updateText(self, even):
         global WHITE, BLACK
         self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}')
 
