@@ -28,8 +28,8 @@
       <file leaf-file-name="mainwindow.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mainwindow.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="237">
-              <caret line="196" column="0" lean-forward="true" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+            <state relative-caret-position="197">
+              <caret line="198" column="29" lean-forward="false" selection-start-line="198" selection-start-column="29" selection-end-line="198" selection-end-column="29" />
               <folding>
                 <element signature="e#492#8426#0" expanded="false" />
               </folding>
@@ -91,16 +91,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ai/utils.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="40">
-              <caret line="2" column="25" lean-forward="false" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="OthelloPlayers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ai/othello/OthelloPlayers.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -130,6 +120,7 @@
       <find>Bar</find>
       <find>numMCTSSims</find>
       <find>textEditInfo</find>
+      <find>connect(</find>
     </findStrings>
     <replaceStrings>
       <replace>None</replace>
@@ -453,14 +444,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/output.py" />
-    <entry file="file://$USER_HOME$/miniconda2/envs/3_6-torch/lib/python3.6/site-packages/PyQt5/QtCore.pyi">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6037" column="10" lean-forward="false" selection-start-line="6037" selection-start-column="10" selection-end-line="6037" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/miniconda2/envs/3_6-torch/lib/python3.6/site-packages/PyQt5/QtGui.pyi">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
@@ -628,16 +611,24 @@
     </entry>
     <entry file="file://$USER_HOME$/miniconda2/envs/3_6-torch/lib/python3.6/site-packages/PyQt5/QtWidgets.pyi">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="257" column="8" lean-forward="false" selection-start-line="257" selection-start-column="8" selection-end-line="257" selection-end-column="8" />
+        <state relative-caret-position="-345">
+          <caret line="257" column="33" lean-forward="false" selection-start-line="257" selection-start-column="33" selection-end-line="257" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda2/envs/3_6-torch/lib/python3.6/site-packages/PyQt5/QtCore.pyi">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="5213" column="6" lean-forward="false" selection-start-line="5213" selection-start-column="6" selection-end-line="5213" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mainwindow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="196" column="0" lean-forward="true" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+        <state relative-caret-position="197">
+          <caret line="198" column="29" lean-forward="false" selection-start-line="198" selection-start-column="29" selection-end-line="198" selection-end-column="29" />
           <folding>
             <element signature="e#492#8426#0" expanded="false" />
           </folding>

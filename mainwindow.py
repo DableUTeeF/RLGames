@@ -190,10 +190,15 @@ class QMainScreen(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.scene = graphicsScene()
+        self.scene.mouseReleaseEvent = self.updateText
         self.ui.graphicsViewBoard.setScene(self.scene)
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
         self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
         self.startButton_click()
+
+    def updateText(self, event):
+        global WHITE, BLACK
+        self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}')
 
     def hint_toggle(self):
         global hint
