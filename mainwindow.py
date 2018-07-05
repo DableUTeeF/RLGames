@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'ui/mainwindow.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-# WARNING! All changes made in this file will be lost!
+r"""
+    Behold, removing tf.Session() in the very first line will cause "signal 11: SIGSEGV"
+"""
 import tensorflow as tf
 with tf.Session():
     pass
@@ -158,7 +155,7 @@ n = 0
 b = 1
 w = -1
 
-"""nnet players"""
+r"""nnet players"""
 n1 = None
 args1 = None
 mcts1 = None
@@ -192,8 +189,8 @@ class QMainScreen(QMainWindow):
         game = OthelloGame(8)
         board = game.getInitBoard()
         n1 = NNet(game)
-        n1.load_checkpoint('ai/weights/', '8x8x60_best.pth.tar')
-        args1 = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
+        n1.load_checkpoint('ai/weights/', '8x8x73_best.pth.tar')
+        args1 = dotdict({'numMCTSSims': 70, 'cpuct': 1.0})
         mcts1 = MCTS(game, n1, args1)
         mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
