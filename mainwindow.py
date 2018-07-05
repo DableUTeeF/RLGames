@@ -146,27 +146,20 @@ r"""
     b: Black
     w: White
 """
-n = None
-b = 0
-w = 1
-pieces = [[n, n, n, n, n, n, n, n],
-          [n, n, n, n, n, n, n, n],
-          [n, n, n, n, n, n, n, n],
-          [n, n, n, w, b, n, n, n],
-          [n, n, n, b, w, n, n, n],
-          [n, n, n, n, n, n, n, n],
-          [n, n, n, n, n, n, n, n],
-          [n, n, n, n, n, n, n, n]]
+n = 0
+b = 1
+w = -1
 
 r"""
-    False is 0 which mean False == black, True == white
+    start with white
 """
-turn = False
+turn = 1
 
 r"""
-    A game to play and somehow, contain the state
+    A game to play and a board
 """
 game = None
+board = None
 
 
 class QMainScreen(QMainWindow):
@@ -179,16 +172,11 @@ class QMainScreen(QMainWindow):
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
 
     def startButton_click(self):
-        global pieces, game
+        global game, board, turn
+        turn = -1
         game = OthelloGame(8)
-        pieces = [[n, n, n, n, n, n, n, n],
-                  [n, n, n, n, n, n, n, n],
-                  [n, n, n, n, n, n, n, n],
-                  [n, n, n, w, b, n, n, n],
-                  [n, n, n, b, w, n, n, n],
-                  [n, n, n, n, n, n, n, n],
-                  [n, n, n, n, n, n, n, n],
-                  [n, n, n, n, n, n, n, n]]
+        board = game.getInitBoard()
+
         pen = QtGui.QPen(QtCore.Qt.black)
         side = 62
         for i in range(8):
@@ -196,9 +184,9 @@ class QMainScreen(QMainWindow):
                 r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
                 pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
                 self.scene.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
-                if pieces[i][j] == b:
+                if board[i][j] == b:
                     self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-                elif pieces[i][j] == w:
+                elif board[i][j] == w:
                     self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
@@ -215,17 +203,37 @@ class graphicsScene(QtWidgets.QGraphicsScene):
         super(graphicsScene, self).__init__(parent)
 
     def mouseReleaseEvent(self, event):
-        self.update()
+        pass
 
     def mousePressEvent(self, event):
-        global pieces, turn, game
+        global turn, game, board
         x = int(event.scenePos().x() // 62)
         y = int(event.scenePos().y() // 62)
+        action = x * 8 + y
+        valid = game.getValidMoves(board, turn)
+        if valid[action] == 0:
+            return
+
         pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
-        pieces[x][y] = turn
-        if ~turn:
+        if turn == 1:
             self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-        else:
+        elif turn == -1:
             self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
-        turn = ~turn
+        board, turn = game.getNextState(board, turn, action)
+        self.refresh()
         self.update()
+
+    def refresh(self):
+        self.clear()
+        pen = QtGui.QPen(QtCore.Qt.black)
+        side = 62
+        for i in range(8):
+            for j in range(8):
+                r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
+                pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
+                self.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
+                if board[i][j] == b:
+                    self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                elif board[i][j] == w:
+                    self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+
