@@ -64,6 +64,9 @@ class Ui_MainWindow:
         self.pushButtonNewGame = QtWidgets.QPushButton(self.groupBox_3)
         self.pushButtonNewGame.setObjectName("pushButtonNewGame")
         self.gridLayout.addWidget(self.pushButtonNewGame, 0, 0, 1, 2)
+        self.pushButtonHintToggle = QtWidgets.QPushButton(self.groupBox_3)
+        self.pushButtonHintToggle.setObjectName("pushButtonHintToggle")
+        self.gridLayout.addWidget(self.pushButtonHintToggle, 4, 0, 1, 2)
         self.label_2 = QtWidgets.QLabel(self.groupBox_3)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
@@ -137,6 +140,7 @@ class Ui_MainWindow:
         MainWindow.setWindowTitle(_translate("MainWindow", "Othello"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Game Options"))
         self.pushButtonNewGame.setText(_translate("MainWindow", "New Game"))
+        self.pushButtonHintToggle.setText(_translate("MainWindow", "Hint Toggle"))
         self.label_2.setText(_translate("MainWindow", "Human Players"))
         self.label.setText(_translate("MainWindow", "Time Limit (sec)"))
         self.comboBoxNumberOfHumans.setItemText(0, _translate("MainWindow", "1"))
@@ -164,7 +168,8 @@ mctsplayer = None
 r"""
     start with white
 """
-turn = 1
+turn = -1
+hint = False
 
 r"""
     A game to play and a board
@@ -172,20 +177,32 @@ r"""
 game = None
 board = None
 
+r"""
+    Count number of pieces
+"""
+BLACK = 0
+WHITE = 0
+
 
 class QMainScreen(QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
-        self.ui = Ui_MainWindow()  # This is from a python export from QtDesigner
+        self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.scene = graphicsScene()
         self.ui.graphicsViewBoard.setScene(self.scene)
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
+        self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
         self.startButton_click()
 
+    def hint_toggle(self):
+        global hint
+        hint = ~hint
+        self.scene.refresh()
+
     def startButton_click(self):
-        global game, board, turn, n1, args1, mcts1, mctsplayer
-        turn = -1
+        global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK
+        turn = 1
         game = OthelloGame(8)
         board = game.getInitBoard()
         n1 = NNet(game)
@@ -194,17 +211,8 @@ class QMainScreen(QMainWindow):
         mcts1 = MCTS(game, n1, args1)
         mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
-        pen = QtGui.QPen(QtCore.Qt.black)
-        side = 62
-        for i in range(8):
-            for j in range(8):
-                r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
-                pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
-                self.scene.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
-                if board[i][j] == b:
-                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-                elif board[i][j] == w:
-                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+        self.scene.refresh()
+        self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}')
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
         self.update()
@@ -247,15 +255,25 @@ class graphicsScene(QtWidgets.QGraphicsScene):
         self.update()
 
     def refresh(self):
+        global hint, BLACK, WHITE
         self.clear()
         pen = QtGui.QPen(QtCore.Qt.black)
         side = 62
+        WHITE = 0
+        BLACK = 0
         for i in range(8):
             for j in range(8):
+                action = i * 8 + j
+                valid = game.getValidMoves(board, turn)
                 r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
                 pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
+                sr = QtCore.QRectF(QtCore.QPointF(i * side + 20, j * side + 20), QtCore.QSizeF(side - 40, side - 40))
                 self.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
                 if board[i][j] == b:
                     self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                    BLACK += 1
                 elif board[i][j] == w:
                     self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+                    WHITE += 1
+                elif valid[action] == 1 and hint:
+                    self.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.darkBlue))
