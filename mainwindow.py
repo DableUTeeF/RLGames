@@ -8,9 +8,11 @@
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtWidgets import QMainWindow
+from ai.othello.OthelloGame import OthelloGame
 
 
-class Ui_MainWindow(QtWidgets.QMainWindow):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
@@ -56,7 +58,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.gridLayout.setObjectName("gridLayout")
         self.pushButtonNewGame = QtWidgets.QPushButton(self.groupBox_3)
         self.pushButtonNewGame.setObjectName("pushButtonNewGame")
-        self.pushButtonNewGame.clicked.connect(self.on_click)
         self.gridLayout.addWidget(self.pushButtonNewGame, 0, 0, 1, 2)
         self.label_2 = QtWidgets.QLabel(self.groupBox_3)
         self.label_2.setObjectName("label_2")
@@ -104,8 +105,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(self.textEditEvents)
         self.verticalLayout_2.addWidget(self.groupBox)
         self.graphicsViewBoard = QtWidgets.QGraphicsView(self.centralWidget)
-        self.scene = QtWidgets.QGraphicsScene()
-        self.graphicsViewBoard.setScene(self.scene)
         self.graphicsViewBoard.setGeometry(QtCore.QRect(12, 12, 508, 508))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -140,24 +139,93 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.groupBox_2.setTitle(_translate("MainWindow", "Game Info"))
         self.groupBox.setTitle(_translate("MainWindow", "Game Events"))
 
-    @pyqtSlot()
-    def on_click(self):
-        pen = QtGui.QPen(QtCore.Qt.green)
-        side = 62
 
+r"""
+    Since I was too lazy but prefer a pretty code.
+    n: None, an empty square
+    b: Black
+    w: White
+"""
+n = None
+b = 0
+w = 1
+pieces = [[n, n, n, n, n, n, n, n],
+          [n, n, n, n, n, n, n, n],
+          [n, n, n, n, n, n, n, n],
+          [n, n, n, w, b, n, n, n],
+          [n, n, n, b, w, n, n, n],
+          [n, n, n, n, n, n, n, n],
+          [n, n, n, n, n, n, n, n],
+          [n, n, n, n, n, n, n, n]]
+
+r"""
+    False is 0 which mean False == black, True == white
+"""
+turn = False
+
+r"""
+    A game to play and somehow, contain the state
+"""
+game = None
+
+
+class QMainScreen(QMainWindow):
+    def __init__(self, parent=None):
+        QtWidgets.QMainWindow.__init__(self, parent)
+        self.ui = Ui_MainWindow()  # This is from a python export from QtDesigner
+        self.ui.setupUi(self)
+        self.scene = graphicsScene()
+        self.ui.graphicsViewBoard.setScene(self.scene)
+        self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
+
+    def startButton_click(self):
+        global pieces, game
+        game = OthelloGame(8)
+        pieces = [[n, n, n, n, n, n, n, n],
+                  [n, n, n, n, n, n, n, n],
+                  [n, n, n, n, n, n, n, n],
+                  [n, n, n, w, b, n, n, n],
+                  [n, n, n, b, w, n, n, n],
+                  [n, n, n, n, n, n, n, n],
+                  [n, n, n, n, n, n, n, n],
+                  [n, n, n, n, n, n, n, n]]
+        pen = QtGui.QPen(QtCore.Qt.black)
+        side = 62
         for i in range(8):
             for j in range(8):
                 r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
-                self.scene.addRect(r, pen)
-        self.repaint()
+                pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
+                self.scene.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
+                if pieces[i][j] == b:
+                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                elif pieces[i][j] == w:
+                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
 
-    def paintEvent(self, event):
-        painter = QtGui.QPainter()
-        painter.begin(self)
-        painter.setPen(QtGui.QPen(QtCore.Qt.red))
-        side = 62
+    def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
+        self.update()
 
-        for i in range(8):
-            for j in range(8):
-                r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
-                self.scene.drawForeground(painter, r)
+
+class graphicsScene(QtWidgets.QGraphicsScene):
+    r"""
+        Since the original QGraphicsScene doesn't has the mouseEvent implemented, so I need to
+        reconstruct a new class
+    """
+
+    def __init__(self, parent=None):
+        super(graphicsScene, self).__init__(parent)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+
+    def mousePressEvent(self, event):
+        global pieces, turn, game
+        x = int(event.scenePos().x() // 62)
+        y = int(event.scenePos().y() // 62)
+        pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
+        pieces[x][y] = turn
+        if ~turn:
+            self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+        else:
+            self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+        turn = ~turn
+        self.update()

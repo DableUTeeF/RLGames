@@ -10,6 +10,7 @@
           <option value="E402" />
           <option value="E701" />
           <option value="E128" />
+          <option value="E731" />
         </list>
       </option>
     </inspection_tool>
@@ -21,6 +22,7 @@
           <option value="N806" />
           <option value="N801" />
           <option value="N803" />
+          <option value="N813" />
         </list>
       </option>
     </inspection_tool>
