@@ -9,7 +9,13 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
+
+from ai.MCTS import MCTS
 from ai.othello.OthelloGame import OthelloGame
+from ai.othello.keras.NNet import NNetWrapper as NNet
+from ai.utils import *
+
+import numpy as np
 
 
 class Ui_MainWindow:
@@ -150,6 +156,12 @@ n = 0
 b = 1
 w = -1
 
+"""nnet players"""
+n1 = None
+args1 = None
+mcts1 = None
+mctsplayer = None
+
 r"""
     start with white
 """
@@ -172,10 +184,15 @@ class QMainScreen(QMainWindow):
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
 
     def startButton_click(self):
-        global game, board, turn
+        global game, board, turn, n1, args1, mcts1, mctsplayer
         turn = -1
         game = OthelloGame(8)
         board = game.getInitBoard()
+        n1 = NNet(game)
+        n1.load_checkpoint('weights/', '8x8x60_best.pth.tar')
+        args1 = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
+        mcts1 = MCTS(g, n1, args1)
+        mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
         pen = QtGui.QPen(QtCore.Qt.black)
         side = 62
@@ -206,7 +223,7 @@ class graphicsScene(QtWidgets.QGraphicsScene):
         pass
 
     def mousePressEvent(self, event):
-        global turn, game, board
+        global turn, game, board, mctsplayer
         x = int(event.scenePos().x() // 62)
         y = int(event.scenePos().y() // 62)
         action = x * 8 + y
@@ -220,6 +237,10 @@ class graphicsScene(QtWidgets.QGraphicsScene):
         elif turn == -1:
             self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
         board, turn = game.getNextState(board, turn, action)
+
+        action = mctsplayer(game.getCanonicalForm(board, turn))
+        board, turn = game.getNextState(board, turn, action)
+
         self.refresh()
         self.update()
 
@@ -236,4 +257,3 @@ class graphicsScene(QtWidgets.QGraphicsScene):
                     self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
                 elif board[i][j] == w:
                     self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
-
