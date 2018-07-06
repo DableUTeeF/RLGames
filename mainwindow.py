@@ -197,8 +197,15 @@ class QMainScreen(QMainWindow):
         self.startButton_click()
 
     def updateText(self, even):
-        global WHITE, BLACK
-        self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}')
+        global WHITE, BLACK, game, board, turn
+        ended = game.getGameEnded(board, 1)
+        if ended == 1:
+            endtext = 'Black won'
+        elif ended == -1:
+            endtext = 'White won'
+        else:
+            endtext = 'No one is won'
+        self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}\n{endtext}')
 
     def hint_toggle(self):
         global hint
