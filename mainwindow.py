@@ -66,21 +66,24 @@ class Ui_MainWindow:
         self.gridLayout.addWidget(self.pushButtonNewGame, 0, 0, 1, 2)
         self.pushButtonHintToggle = QtWidgets.QPushButton(self.groupBox_3)
         self.pushButtonHintToggle.setObjectName("pushButtonHintToggle")
-        self.gridLayout.addWidget(self.pushButtonHintToggle, 4, 0, 1, 2)
-        self.label_2 = QtWidgets.QLabel(self.groupBox_3)
-        self.label_2.setObjectName("label_2")
-        self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
-        self.lineEditTimeLimit = QtWidgets.QLineEdit(self.groupBox_3)
-        self.lineEditTimeLimit.setObjectName("lineEditTimeLimit")
-        self.gridLayout.addWidget(self.lineEditTimeLimit, 3, 1, 1, 1)
+        self.pushButtonAIToggle = QtWidgets.QPushButton(self.groupBox_3)
+        self.pushButtonAIToggle.setObjectName("pushButtonAIToggle")
+        self.gridLayout.addWidget(self.pushButtonHintToggle, 5, 0, 1, 2)
+        self.gridLayout.addWidget(self.pushButtonAIToggle, 1, 0, 1, 2)
+        self.label_w = QtWidgets.QLabel(self.groupBox_3)
+        self.label_w.setObjectName("label_w")
+        self.gridLayout.addWidget(self.label_w, 4, 0, 1, 1)
+        self.lineEditNumMCTSSims = QtWidgets.QLineEdit(self.groupBox_3)
+        self.lineEditNumMCTSSims.setObjectName("lineEditTimeLimit")
+        self.gridLayout.addWidget(self.lineEditNumMCTSSims, 3, 1, 1, 1)
         self.label = QtWidgets.QLabel(self.groupBox_3)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
-        self.comboBoxNumberOfHumans = QtWidgets.QComboBox(self.groupBox_3)
-        self.comboBoxNumberOfHumans.setObjectName("comboBoxNumberOfHumans")
-        self.comboBoxNumberOfHumans.addItem("")
-        self.comboBoxNumberOfHumans.addItem("")
-        self.gridLayout.addWidget(self.comboBoxNumberOfHumans, 2, 1, 1, 1)
+        self.comboBoxWeightsName = QtWidgets.QComboBox(self.groupBox_3)
+        self.comboBoxWeightsName.setObjectName("comboBoxWeightsName")
+        self.comboBoxWeightsName.addItem("")
+        self.comboBoxWeightsName.addItem("")
+        self.gridLayout.addWidget(self.comboBoxWeightsName, 4, 1, 1, 1)
         self.verticalLayout_2.addWidget(self.groupBox_3)
         self.groupBox_2 = QtWidgets.QGroupBox(self.frame_2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -97,21 +100,6 @@ class Ui_MainWindow:
         self.textEditInfo.setObjectName("textEditInfo")
         self.verticalLayout_3.addWidget(self.textEditInfo)
         self.verticalLayout_2.addWidget(self.groupBox_2)
-        self.groupBox = QtWidgets.QGroupBox(self.frame_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(7)
-        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
-        self.groupBox.setSizePolicy(sizePolicy)
-        self.groupBox.setObjectName("groupBox")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox)
-        self.verticalLayout.setContentsMargins(11, 11, 11, 11)
-        self.verticalLayout.setSpacing(6)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.textEditEvents = QtWidgets.QTextEdit(self.groupBox)
-        self.textEditEvents.setObjectName("textEditEvents")
-        self.verticalLayout.addWidget(self.textEditEvents)
-        self.verticalLayout_2.addWidget(self.groupBox)
         self.graphicsViewBoard = QtWidgets.QGraphicsView(self.centralWidget)
         self.graphicsViewBoard.setGeometry(QtCore.QRect(12, 12, 508, 508))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
@@ -141,12 +129,12 @@ class Ui_MainWindow:
         self.groupBox_3.setTitle(_translate("MainWindow", "Game Options"))
         self.pushButtonNewGame.setText(_translate("MainWindow", "New Game"))
         self.pushButtonHintToggle.setText(_translate("MainWindow", "Hint Toggle"))
-        self.label_2.setText(_translate("MainWindow", "Human Players"))
-        self.label.setText(_translate("MainWindow", "Time Limit (sec)"))
-        self.comboBoxNumberOfHumans.setItemText(0, _translate("MainWindow", "1"))
-        self.comboBoxNumberOfHumans.setItemText(1, _translate("MainWindow", "2"))
+        self.pushButtonAIToggle.setText(_translate("MainWindow", "AI off"))
+        self.label_w.setText(_translate("MainWindow", "AI at epoch"))
+        self.label.setText(_translate("MainWindow", "numMCTSSims"))
+        self.comboBoxWeightsName.setItemText(0, _translate("MainWindow", "60"))
+        self.comboBoxWeightsName.setItemText(1, _translate("MainWindow", "73"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Game Info"))
-        self.groupBox.setTitle(_translate("MainWindow", "Game Events"))
 
 
 r"""
@@ -164,6 +152,7 @@ n1 = None
 args1 = None
 mcts1 = None
 mctsplayer = None
+AI = True
 
 r"""
     start with white
@@ -194,18 +183,31 @@ class QMainScreen(QMainWindow):
         self.ui.graphicsViewBoard.setScene(self.scene)
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
         self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
+        self.ui.pushButtonAIToggle.clicked.connect(self.ai_toggle)
+        self.ui.lineEditNumMCTSSims.setText("70")
+
         self.startButton_click()
 
-    def updateText(self, even):
-        global WHITE, BLACK, game, board, turn
+    def ai_toggle(self):
+        global AI
+        self.ui.pushButtonAIToggle.setText("AI on" if AI else "AI off")
+        AI = not AI
+
+    def updateText(self, _):
+        global WHITE, BLACK, game, board, turn, AI
         ended = game.getGameEnded(board, 1)
+        if AI:
+            ais = "AI is on"
+        else:
+            ais = "AI is off"
         if ended == 1:
             endtext = 'Black won'
         elif ended == -1:
             endtext = 'White won'
         else:
             endtext = 'No one is won'
-        self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}\n{endtext}')
+        self.ui.textEditInfo.setText(f'{ais}, mctsSims: {self.ui.lineEditNumMCTSSims.text()}\n'
+                                     f'WHITE: {WHITE}, BLACK: {BLACK}\n{endtext}')
 
     def hint_toggle(self):
         global hint
@@ -213,18 +215,38 @@ class QMainScreen(QMainWindow):
         self.scene.refresh()
 
     def startButton_click(self):
-        global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK
+        global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK, AI
+        weights = ['8x8x60_best.pth.tar', '8x8x73_best.pth.tar']
+        epch = self.ui.comboBoxWeightsName.currentIndex()
         turn = 1
         game = OthelloGame(8)
         board = game.getInitBoard()
         n1 = NNet(game)
-        n1.load_checkpoint('ai/weights/', '8x8x73_best.pth.tar')
-        args1 = dotdict({'numMCTSSims': 70, 'cpuct': 1.0})
+        n1.load_checkpoint('ai/weights/', weights[epch])
+        try:
+            nsims = int(self.ui.lineEditNumMCTSSims.text())
+            args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
+        except ValueError:
+            args1 = dotdict({'numMCTSSims': 70, 'cpuct': 1.0})
         mcts1 = MCTS(game, n1, args1)
         mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
         self.scene.refresh()
-        self.ui.textEditInfo.setText(f'WHITE: {WHITE}, BLACK: {BLACK}')
+        if AI:
+            self.scene.mousePressEvent(None)
+        ended = game.getGameEnded(board, 1)
+        if AI:
+            ais = "AI is on"
+        else:
+            ais = "AI is off"
+        if ended == 1:
+            endtext = 'Black won'
+        elif ended == -1:
+            endtext = 'White won'
+        else:
+            endtext = 'No one is won'
+        self.ui.textEditInfo.setText(f'{ais}, mctsSims: {self.ui.lineEditNumMCTSSims.text()}\n'
+                                     f'WHITE: {WHITE}, BLACK: {BLACK}\n{endtext}')
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
         self.update()
@@ -239,17 +261,26 @@ class graphicsScene(QtWidgets.QGraphicsScene):
     def __init__(self, parent=None):
         super(graphicsScene, self).__init__(parent)
 
-    def mouseReleaseEvent(self, event):
-        pass
-
     def mousePressEvent(self, event):
-        global turn, game, board, mctsplayer
-        x = int(event.scenePos().x() // 62)
-        y = int(event.scenePos().y() // 62)
+        global turn, game, board, mctsplayer, AI
+        if event is not None:
+            x = int(event.scenePos().x() // 62)
+            y = int(event.scenePos().y() // 62)
+        else:
+            x = 4
+            y = 4
         action = x * 8 + y
         valid = game.getValidMoves(board, turn)
         if np.sum(valid[:-1]) > 0:
-            if valid[action] == 0:
+            if valid[action] == 0 and event is not None:
+                return
+            elif event is None:
+                if AI:
+                    action = mctsplayer(game.getCanonicalForm(board, turn))
+                    board, turn = game.getNextState(board, turn, action)
+
+                self.refresh()
+                self.update()
                 return
 
             pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
@@ -260,8 +291,9 @@ class graphicsScene(QtWidgets.QGraphicsScene):
             board, turn = game.getNextState(board, turn, action)
         else:
             turn *= -1
-        action = mctsplayer(game.getCanonicalForm(board, turn))
-        board, turn = game.getNextState(board, turn, action)
+        if AI:
+            action = mctsplayer(game.getCanonicalForm(board, turn))
+            board, turn = game.getNextState(board, turn, action)
 
         self.refresh()
         self.update()
