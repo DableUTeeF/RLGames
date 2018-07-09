@@ -249,8 +249,8 @@ class QMainScreen(QMainWindow):
 
 class graphicsScene(QtWidgets.QGraphicsScene):
     r"""
-        Since the original QGraphicsScene doesn't has the mouseEvent implemented, so I need to
-        reconstruct a new class
+        So there is ways to override method which means this class is now useless.
+        If you (or me) feel ill with global variables lets put code below to Mainscreen class
     """
 
     def __init__(self, parent=None):
