@@ -2,7 +2,7 @@ from collections import deque
 from ai.Arena import Arena
 from ai.MCTS import MCTS
 import numpy as np
-from ai.utils import Bar, AverageMeter
+from ai.Bar import Bar, AverageMeter
 import time
 import os
 import sys

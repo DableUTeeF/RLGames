@@ -2,7 +2,6 @@
 r"""
     Behold, removing tf.Session() in the very first line will cause "signal 11: SIGSEGV"
 """
-import tensorflow as tf
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
