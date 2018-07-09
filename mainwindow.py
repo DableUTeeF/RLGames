@@ -155,9 +155,9 @@ mctsplayer = None
 AI = True
 
 r"""
-    start with white
+    start with black
 """
-turn = -1
+turn = 1
 hint = False
 
 r"""
@@ -184,7 +184,7 @@ class QMainScreen(QMainWindow):
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
         self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
         self.ui.pushButtonAIToggle.clicked.connect(self.ai_toggle)
-        self.ui.lineEditNumMCTSSims.setText("70")
+        self.ui.lineEditNumMCTSSims.setText("25")
 
         self.startButton_click()
 
@@ -197,7 +197,7 @@ class QMainScreen(QMainWindow):
         global WHITE, BLACK, game, board, turn, AI
         ended = game.getGameEnded(board, 1)
         if AI:
-            ais = "AI is on"
+            ais = f"AI is on, ai playing {'white' if turn == 1 else 'black'}"
         else:
             ais = "AI is off"
         if ended == 1:
@@ -227,7 +227,7 @@ class QMainScreen(QMainWindow):
             nsims = int(self.ui.lineEditNumMCTSSims.text())
             args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
         except ValueError:
-            args1 = dotdict({'numMCTSSims': 70, 'cpuct': 1.0})
+            args1 = dotdict({'numMCTSSims': 25, 'cpuct': 1.0})
         mcts1 = MCTS(game, n1, args1)
         mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
@@ -291,7 +291,7 @@ class graphicsScene(QtWidgets.QGraphicsScene):
             board, turn = game.getNextState(board, turn, action)
         else:
             turn *= -1
-        if AI:
+        if AI and game.getGameEnded(board, 1) != 0:
             action = mctsplayer(game.getCanonicalForm(board, turn))
             board, turn = game.getNextState(board, turn, action)
 
