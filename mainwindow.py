@@ -3,8 +3,6 @@ r"""
     Behold, removing tf.Session() in the very first line will cause "signal 11: SIGSEGV"
 """
 import tensorflow as tf
-with tf.Session():
-    pass
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
@@ -148,7 +146,6 @@ b = 1
 w = -1
 
 r"""nnet players"""
-n1 = None
 args1 = None
 mcts1 = None
 mctsplayer = None
@@ -163,8 +160,9 @@ hint = False
 r"""
     A game to play and a board
 """
-game = None
+game = OthelloGame(8)
 board = None
+n1 = NNet(game)
 
 r"""
     Count number of pieces
@@ -185,7 +183,7 @@ class QMainScreen(QMainWindow):
         self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
         self.ui.pushButtonAIToggle.clicked.connect(self.ai_toggle)
         self.ui.lineEditNumMCTSSims.setText("25")
-
+        self.ui.textEditInfo.setReadOnly(True)
         self.startButton_click()
 
     def ai_toggle(self):
@@ -197,7 +195,7 @@ class QMainScreen(QMainWindow):
         global WHITE, BLACK, game, board, turn, AI
         ended = game.getGameEnded(board, 1)
         if AI:
-            ais = f"AI is on, ai playing {'white' if turn == 1 else 'black'}"
+            ais = f"AI is playing {'white' if turn == 1 else 'black'}"
         else:
             ais = "AI is off"
         if ended == 1:
@@ -219,9 +217,7 @@ class QMainScreen(QMainWindow):
         weights = ['8x8x60_best.pth.tar', '8x8x73_best.pth.tar']
         epch = self.ui.comboBoxWeightsName.currentIndex()
         turn = 1
-        game = OthelloGame(8)
         board = game.getInitBoard()
-        n1 = NNet(game)
         n1.load_checkpoint('ai/weights/', weights[epch])
         try:
             nsims = int(self.ui.lineEditNumMCTSSims.text())
@@ -236,7 +232,7 @@ class QMainScreen(QMainWindow):
             self.scene.mousePressEvent(None)
         ended = game.getGameEnded(board, 1)
         if AI:
-            ais = "AI is on"
+            ais = f"AI is playing {'white' if turn == 1 else 'black'}"
         else:
             ais = "AI is off"
         if ended == 1:
@@ -291,7 +287,7 @@ class graphicsScene(QtWidgets.QGraphicsScene):
             board, turn = game.getNextState(board, turn, action)
         else:
             turn *= -1
-        if AI and game.getGameEnded(board, 1) != 0:
+        if AI and game.getGameEnded(board, 1) == 0:
             action = mctsplayer(game.getCanonicalForm(board, turn))
             board, turn = game.getNextState(board, turn, action)
 
