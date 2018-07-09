@@ -8,8 +8,8 @@ import math
 import sys
 
 sys.path.append('../..')
-from ai.utils import *
-from ai.NeuralNet import NeuralNet
+from ...utils import *
+from ...NeuralNet import NeuralNet
 
 import argparse
 from .OthelloNNet import OthelloNNet as onnet

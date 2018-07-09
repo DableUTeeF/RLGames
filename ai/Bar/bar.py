@@ -15,7 +15,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 from __future__ import unicode_literals
-from ai.Bar.progress import Progress
+from .progress import Progress
 from .helpers import WritelnMixin
 import errno
 import os

@@ -1,8 +1,8 @@
 from collections import deque
-from ai.Arena import Arena
-from ai.MCTS import MCTS
+from .Arena import Arena
+from .MCTS import MCTS
 import numpy as np
-from ai.Bar import Bar, AverageMeter
+from .Bar import Bar, AverageMeter
 import time
 import os
 import sys

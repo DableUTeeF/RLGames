@@ -1,11 +1,11 @@
-import ai.Arena as Arena
-from ai.MCTS import MCTS
-from ai.othello.OthelloGame import OthelloGame, display
-from ai.othello.OthelloPlayers import *
-from ai.othello.keras.NNet import NNetWrapper as NNet
+from . import Arena
+from .MCTS import MCTS
+from .othello.OthelloGame import OthelloGame, display
+from .othello.OthelloPlayers import *
+from .othello.keras.NNet import NNetWrapper as NNet
 
 import numpy as np
-from utils import *
+from .utils import *
 
 """
 use this script to play any two agents against each other, or play manually with
