@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 sys.path.append('..')
-from ai.Game import Game
+from Game import Game
 from .GobangLogic import Board
 import numpy as np
 

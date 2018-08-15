@@ -8,8 +8,8 @@ import math
 import sys
 import tensorflow as tf
 sys.path.append('..')
-from ...utils import *
-from ...NeuralNet import NeuralNet
+from utils import *
+from NeuralNet import NeuralNet
 
 import argparse
 from .GobangNNet import GobangNNet as onnet
@@ -22,7 +22,6 @@ args = dotdict({
     'cuda': True,
     'num_channels': 512,
 })
-
 
 
 class NNetWrapper(NeuralNet):

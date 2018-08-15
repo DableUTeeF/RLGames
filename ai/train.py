@@ -1,10 +1,10 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-from ai.Coach import Coach
-from ai.gobang.GobangGame import OthelloGame as Game
-from ai.gobang.keras.NNet import NNetWrapper as nn
-from ai.utils import *
+from Coach import Coach
+from gobang.GobangGame import GobangGame as Game
+from gobang.keras.NNet import NNetWrapper as nn
+from utils import *
 
 args = dotdict({
     'numIters': 1000,

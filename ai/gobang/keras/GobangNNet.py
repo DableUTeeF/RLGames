@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..')
-from ai.utils import *
+from utils import *
 
 import argparse
 from keras.models import *
