@@ -7,8 +7,11 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
 
 from ai.MCTS import MCTS
-from ai.othello.OthelloGame import OthelloGame
-from ai.othello.keras.NNet import NNetWrapper as NNet
+# from ai.othello.OthelloGame import OthelloGame as g
+# from ai.othello.keras.NNet import NNetWrapper as NNet
+
+from ai.gobang.GobangGame import GobangGame as g
+from ai.gobang.keras.NNet import NNetWrapper as NNet
 from ai.utils import *
 
 import numpy as np
@@ -159,7 +162,7 @@ hint = False
 r"""
     A game to play and a board
 """
-game = OthelloGame(8)
+game = g(8)
 board = None
 n1 = NNet(game)
 
@@ -213,7 +216,8 @@ class QMainScreen(QMainWindow):
 
     def startButton_click(self):
         global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK, AI
-        weights = ['8x8x60_best.pth.tar', '8x8x73_best.pth.tar']
+        # weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
+        weights = ['gobang_8x8x158.pth.tar', 'gobang_8x8x103.pth.tar']
         epch = self.ui.comboBoxWeightsName.currentIndex()
         turn = 1
         board = game.getInitBoard()
