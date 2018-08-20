@@ -1,8 +1,8 @@
 from collections import deque
-from Arena import Arena
-from MCTS import MCTS
+from .Arena import Arena
+from .MCTS import MCTS
 import numpy as np
-from Bar import Bar, AverageMeter
+from .Bar import Bar, AverageMeter
 import time
 import os
 import sys
@@ -106,9 +106,9 @@ class Coach:
                 self.trainExamplesHistory.pop(0)
             # backup history to a file
             # NB! the examples were collected using the model from the previous iteration, so (i-1)  
-            # self.saveTrainExamples(i - 1)
+            self.saveTrainExamples()
 
-            # shuffle examlpes before training
+            # shuffle examlpes before training a005835
             trainExamples = []
             for e in self.trainExamplesHistory:
                 trainExamples.extend(e)
@@ -140,11 +140,11 @@ class Coach:
     def getCheckpointFile(iteration):
         return 'checkpoint_' + str(iteration) + '.pth.tar'
 
-    def saveTrainExamples(self, iteration):
+    def saveTrainExamples(self):
         folder = self.args.checkpoint
         if not os.path.exists(folder):
             os.makedirs(folder)
-        filename = os.path.join(folder, self.getCheckpointFile(iteration) + ".examples")
+        filename = os.path.join(folder, 'last' + ".examples")
         with open(filename, "wb+") as f:
             Pickler(f).dump(self.trainExamplesHistory)
 

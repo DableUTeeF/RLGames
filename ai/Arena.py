@@ -1,4 +1,4 @@
-from Bar.bar import Bar, AverageMeter
+from .Bar.bar import Bar, AverageMeter
 import time
 
 

@@ -217,7 +217,7 @@ class QMainScreen(QMainWindow):
     def startButton_click(self):
         global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK, AI
         # weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
-        weights = ['gobang_8x8x158.pth.tar', 'gobang_8x8x103.pth.tar']
+        weights = ['checkpoint_18.pth.tar', 'gobang_8x8x103.pth.tar']
         epch = self.ui.comboBoxWeightsName.currentIndex()
         turn = 1
         board = game.getInitBoard()
