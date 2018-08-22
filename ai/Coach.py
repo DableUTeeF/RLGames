@@ -57,6 +57,7 @@ class Coach:
                 trainExamples.append([b, self.curPlayer, p, None])
 
             action = np.random.choice(len(pi), p=pi)
+            print(action, pi)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
 
             r = self.game.getGameEnded(board, self.curPlayer)
@@ -92,7 +93,7 @@ class Coach:
                     eps_time.update(time.time() - end)
                     end = time.time()
                     bar.suffix = '({eps}/{maxeps}) Eps Time: {et:.3f}s | Total: {total:} | ETA: {eta:}'.format(
-                        eps=eps + 1, maxeps=self.args.numEps, et=eps_time.avg,
+                        eps=eps, maxeps=self.args.numEps, et=eps_time.avg,
                         total=bar.elapsed_td, eta=bar.eta_td)
                     bar.next()
                 bar.finish()
@@ -149,7 +150,7 @@ class Coach:
             Pickler(f).dump(self.trainExamplesHistory)
 
     def loadTrainExamples(self):
-        modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
+        modelFile = os.path.join(self.args.load_folder_file[0], 'last')
         examplesFile = modelFile + ".examples"
         if not os.path.isfile(examplesFile):
             print(examplesFile)

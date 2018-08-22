@@ -8,21 +8,21 @@ from ai.utils import *
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 
-# config = tf.ConfigProto()
-# config.gpu_options.per_process_gpu_memory_fraction = 0.4
-# set_session(tf.Session(config=config))
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.8
+set_session(tf.Session(config=config))
 args = dotdict({
-    'numIters': 100,
+    'numIters': 256,
     'numEps': 2048,
     'tempThreshold': 15,
-    'updateThreshold': 0.6,
+    'updateThreshold': 0.55,
     'maxlenOfQueue': 2000000,
     'numMCTSSims': 25,
     'arenaCompare': 100,
     'cpuct': 1,
 
     'checkpoint': './temp/',
-    'load_model': True,
+    'load_model': False,
     'load_folder_file': ('ai/temp/', 'checkpoint_18.pth.tar'),
     'numItersForTrainExamplesHistory': 20,
 
