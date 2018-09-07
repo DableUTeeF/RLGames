@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8c6b2a9-b5a6-4ef3-a4e0-0d846d6bd508" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/ai/connect4/keras/Connect4NNet.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ai/connect4/keras/NNet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/Coach.py" beforeDir="false" afterPath="$PROJECT_DIR$/ai/Coach.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/connect4/Connect4Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/ai/connect4/Connect4Game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/gobang/keras/NNet.py" beforeDir="false" afterPath="$PROJECT_DIR$/ai/gobang/keras/NNet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/pit.py" beforeDir="false" afterPath="$PROJECT_DIR$/ai/pit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/weights/checkpoint_18.pth.tar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -25,8 +16,11 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="80">
-              <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
+            <state relative-caret-position="100">
+              <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -34,7 +28,7 @@
       <file leaf-file-name="Connect4Game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ai/connect4/Connect4Game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
+            <state relative-caret-position="320">
               <caret line="16" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
@@ -46,10 +40,9 @@
       <file leaf-file-name="mainwindow.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mainwindow.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="827">
-              <caret line="303" column="17" lean-forward="true" selection-start-line="303" selection-start-column="17" selection-end-line="303" selection-end-column="17" />
+            <state relative-caret-position="249">
+              <caret line="192" selection-start-line="192" selection-end-line="192" />
               <folding>
-                <element signature="e#122#164#0" expanded="true" />
                 <element signature="e#552#7776#0" />
               </folding>
             </state>
@@ -68,8 +61,8 @@
       <file leaf-file-name="Coach.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ai/Coach.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="135" column="42" selection-start-line="135" selection-start-column="42" selection-end-line="135" selection-end-column="42" />
+            <state relative-caret-position="220">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
               </folding>
@@ -179,17 +172,6 @@
             <path>
               <item name="RLGames" type="b2602c69:ProjectViewProjectNode" />
               <item name="RLGames" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="RLGames" type="b2602c69:ProjectViewProjectNode" />
-              <item name="RLGames" type="462c0819:PsiDirectoryNode" />
-              <item name="ai" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="RLGames" type="b2602c69:ProjectViewProjectNode" />
-              <item name="RLGames" type="462c0819:PsiDirectoryNode" />
-              <item name="ai" type="462c0819:PsiDirectoryNode" />
-              <item name="weights" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -326,8 +308,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.pit" />
         <item itemvalue="Python.mainwindow" />
+        <item itemvalue="Python.pit" />
         <item itemvalue="Python.train" />
         <item itemvalue="Python.testmodelrecon" />
       </list>
@@ -381,17 +363,10 @@
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="5" />
+      <option name="time" value="7" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/miniconda2/envs/3_6-torch/lib/python3.6/site-packages/PyQt5/QtWidgets.pyi">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-345">
-          <caret line="257" column="33" selection-start-line="257" selection-start-column="33" selection-end-line="257" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/miniconda2/envs/3_6-torch/lib/python3.6/site-packages/PyQt5/QtCore.pyi">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="77">
@@ -693,33 +668,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ai/connect4/Connect4Game.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="129">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ai/Coach.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="135" column="42" selection-start-line="135" selection-start-column="42" selection-end-line="135" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ai/Arena.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-64">
@@ -741,12 +689,48 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ai/connect4/Connect4Game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ai/Coach.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/2022905153/PyQt5/QtCore/QPointF.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1480">
+          <caret line="74" column="27" lean-forward="true" selection-start-line="74" selection-start-column="27" selection-end-line="74" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mainwindow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="827">
-          <caret line="303" column="17" lean-forward="true" selection-start-line="303" selection-start-column="17" selection-end-line="303" selection-end-column="17" />
+        <state relative-caret-position="249">
+          <caret line="192" selection-start-line="192" selection-end-line="192" />
           <folding>
-            <element signature="e#122#164#0" expanded="true" />
             <element signature="e#552#7776#0" />
           </folding>
         </state>

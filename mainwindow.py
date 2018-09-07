@@ -2,6 +2,8 @@
 r"""
     Behold, removing tf.Session() in the very first line will cause "signal 11: SIGSEGV"
 """
+import tensorflow as tf
+tf.Session()
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
@@ -18,10 +20,6 @@ from ai.connect4.keras.NNet import NNetWrapper as CNNet
 from ai.utils import *
 
 import numpy as np
-
-
-g = Og
-NNet = ONNet
 
 
 class Ui_MainWindow:
@@ -150,34 +148,6 @@ r"""
     b: Black
     w: White
 """
-n = 0
-b = 1
-w = -1
-
-r"""nnet players"""
-args1 = None
-mcts1 = None
-mctsplayer = None
-AI = True
-
-r"""
-    start with black
-"""
-turn = 1
-hint = False
-
-r"""
-    A game to play and a board
-"""
-game = g(8)
-board = None
-n1 = NNet(game)
-
-r"""
-    Count number of pieces
-"""
-BLACK = 0
-WHITE = 0
 
 
 class QMainScreen(QMainWindow):
@@ -194,18 +164,47 @@ class QMainScreen(QMainWindow):
         self.ui.pushButtonAIToggle.clicked.connect(self.ai_toggle)
         self.ui.lineEditNumMCTSSims.setText("25")
         self.ui.textEditInfo.setReadOnly(True)
+
+        self.g = Og
+        self.NNet = ONNet
+
+        self.n = 0
+        self.b = 1
+        self.w = -1
+
+        r"""nnet players"""
+        self.args1 = None
+        self.mcts1 = None
+        self.mctsplayer = None
+        self.AI = True
+
+        r"""
+            start with black
+        """
+        self.turn = 1
+        self.hint = False
+
+        r"""
+            A game to play and a board
+        """
+        self.game = self.g(8)
+        self.board = None
+        self.n1 = self.NNet(self.game)
+        r"""
+            Count number of pieces
+        """
+        self.BLACK = 0
+        self.WHITE = 0
         self.startButton_click()
 
     def ai_toggle(self):
-        global AI
-        self.ui.pushButtonAIToggle.setText("AI on" if AI else "AI off")
-        AI = not AI
+        self.ui.pushButtonAIToggle.setText("AI on" if self.AI else "AI off")
+        self.AI = not self.AI
 
     def updateText(self, _):
-        global WHITE, BLACK, game, board, turn, AI
-        ended = game.getGameEnded(board, 1)
-        if AI:
-            ais = f"AI is playing {'white' if turn == 1 else 'black'}"
+        ended = self.game.getGameEnded(self.board, 1)
+        if self.AI:
+            ais = f"AI is playing {'white' if self.turn == 1 else 'black'}"
         else:
             ais = "AI is off"
         if ended == 1:
@@ -215,35 +214,33 @@ class QMainScreen(QMainWindow):
         else:
             endtext = 'No one is won'
         self.ui.textEditInfo.setText(f'{ais}, mctsSims: {self.ui.lineEditNumMCTSSims.text()}\n'
-                                     f'WHITE: {WHITE}, BLACK: {BLACK}\n{endtext}')
+                                     f'WHITE: {self.WHITE}, BLACK: {self.BLACK}\n{endtext}')
 
     def hint_toggle(self):
-        global hint
-        hint = ~hint
-        self.scene.refresh()
+        self.hint = ~self.hint
+        self.refresh()
 
     def startButton_click(self):
-        global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK, AI
         weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
         # weights = ['checkpoint_18.pth.tar', 'gobang_8x8x103.pth.tar']
         epch = self.ui.comboBoxWeightsName.currentIndex()
-        turn = 1
-        board = game.getInitBoard()
+        self.turn = 1
+        self.board = self.game.getInitBoard()
         n1.load_checkpoint('ai/weights/', weights[epch])
         try:
             nsims = int(self.ui.lineEditNumMCTSSims.text())
-            args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
+            self.args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
         except ValueError:
-            args1 = dotdict({'numMCTSSims': 25, 'cpuct': 1.0})
-        mcts1 = MCTS(game, n1, args1)
-        mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
+            self.args1 = dotdict({'numMCTSSims': 25, 'cpuct': 1.0})
+        self.mcts1 = MCTS(self.game, self.n1, self.args1)
+        self.mctsplayer = lambda x: np.argmax(self.mcts1.getActionProb(x, temp=0))
 
         self.refresh()
-        if AI:
+        if self.AI:
             self.scene.mousePressEvent(None)
-        ended = game.getGameEnded(board, 1)
-        if AI:
-            ais = f"AI is playing {'white' if turn == 1 else 'black'}"
+        ended = self.game.getGameEnded(self.board, 1)
+        if self.AI:
+            ais = f"AI is playing {'white' if self.turn == 1 else 'black'}"
         else:
             ais = "AI is off"
         if ended == 1:
@@ -253,68 +250,73 @@ class QMainScreen(QMainWindow):
         else:
             endtext = 'No one is won'
         self.ui.textEditInfo.setText(f'{ais}, mctsSims: {self.ui.lineEditNumMCTSSims.text()}\n'
-                                     f'WHITE: {WHITE}, BLACK: {BLACK}\n{endtext}')
+                                     f'WHITE: {self.WHITE}, BLACK: {self.BLACK}\n{endtext}')
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
         self.update()
 
     def scene_mousePressEvent(self, event):
-        global turn, game, board, mctsplayer, AI
         if event is not None:
             x = int(event.scenePos().x() // 62)
             y = int(event.scenePos().y() // 62)
         else:
             x = 4
             y = 4
-        action = x * 8 + y
-        valid = game.getValidMoves(board, turn)
+        if self.g == Og or self.g == Gg:
+            action = y * 8 + x
+        else:
+            action = x
+        valid = self.game.getValidMoves(self.board, self.turn)
         if np.sum(valid[:-1]) > 0:
             if valid[action] == 0 and event is not None:
                 return
             elif event is None:
-                if AI:
-                    action = mctsplayer(game.getCanonicalForm(board, turn))
-                    board, turn = game.getNextState(board, turn, action)
+                if self.AI:
+                    action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
+                    self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
 
                 self.refresh()
                 self.update()
                 return
 
             pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
-            if turn == 1:
+            if self.turn == 1:
                 self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-            elif turn == -1:
+            elif self.turn == -1:
                 self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
-            board, turn = game.getNextState(board, turn, action)
+            self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         else:
-            turn *= -1
-        if AI and game.getGameEnded(board, 1) == 0:
-            action = mctsplayer(game.getCanonicalForm(board, turn))
-            board, turn = game.getNextState(board, turn, action)
+            self.turn *= -1
+        if self.AI and self.game.getGameEnded(self.board, 1) == 0:
+            action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
+            self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
 
         self.refresh()
         self.update()
 
     def refresh(self):
-        global hint, BLACK, WHITE
         self.scene.clear()
         pen = QtGui.QPen(QtCore.Qt.black)
         side = 62
-        WHITE = 0
-        BLACK = 0
-        for i in range(8):
-            for j in range(8):
-                action = i * 8 + j
-                valid = game.getValidMoves(board, turn)
-                r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
-                pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
-                sr = QtCore.QRectF(QtCore.QPointF(i * side + 20, j * side + 20), QtCore.QSizeF(side - 40, side - 40))
+        self.WHITE = 0
+        self.BLACK = 0
+        for x in range(8):
+            for y in range(8):
+                if self.g == Og or self.g == Gg:
+                    action = x * 8 + y
+                else:
+                    action = x
+
+                valid = self.game.getValidMoves(self.board, self.turn)
+                r = QtCore.QRectF(QtCore.QPointF(x * side, y * side), QtCore.QSizeF(side, side))
+                pr = QtCore.QRectF(QtCore.QPointF(x * side + 5, y * side + 5), QtCore.QSizeF(side - 10, side - 10))
+                sr = QtCore.QRectF(QtCore.QPointF(x * side + 20, y * side + 20), QtCore.QSizeF(side - 40, side - 40))
                 self.scene.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
-                if board[i][j] == b:
+                if self.board[y][x] == self.b:
                     self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-                    BLACK += 1
-                elif board[i][j] == w:
+                    self.BLACK += 1
+                elif self.board[y][x] == self.w:
                     self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
-                    WHITE += 1
-                elif valid[action] == 1 and hint:
+                    self.WHITE += 1
+                elif valid[action] == 1 and self.hint:
                     self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.darkBlue))
