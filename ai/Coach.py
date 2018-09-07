@@ -1,4 +1,5 @@
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from .Arena import Arena
 from .MCTS import MCTS
 import numpy as np
@@ -57,7 +58,7 @@ class Coach:
                 trainExamples.append([b, self.curPlayer, p, None])
 
             action = np.random.choice(len(pi), p=pi)
-            print(action, pi)
+            # print(action, pi)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
 
             r = self.game.getGameEnded(board, self.curPlayer)
@@ -87,8 +88,14 @@ class Coach:
 
                 for eps in range(self.args.numEps):
                     self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
+                    # with ThreadPoolExecutor(max_workers=self.args.max_processes) as executor:
+                    #     for j in range(self.args.max_processes):
+                    #         print('hello human')
+                    #         # iters.append(executor.submit(executeEpisode, self.game, self.curPlayer, self.args, self.mcts))
+                    #         # iterationTrainExamples += executor.submit(self.executeEpisode).result()
+                    #
+                    #         # tempiter = executor.submit(executeEpisode, self).result()
                     iterationTrainExamples += self.executeEpisode()
-
                     # bookkeeping + plot progress
                     eps_time.update(time.time() - end)
                     end = time.time()
@@ -163,3 +170,44 @@ class Coach:
                 self.trainExamplesHistory = Unpickler(f).load()
             # examples based on the model were already collected (loaded)
             self.skipFirstSelfPlay = True
+
+
+def executeEpisode(game, curPlayer, args, mcts):
+    """
+    This function executes one episode of self-play, starting with player 1.
+    As the game is played, each turn is added as a training example to
+    trainExamples. The game is played till the game ends. After the game
+    ends, the outcome of the game is used to assign values to each example
+    in trainExamples.
+
+    It uses a temp=1 if episodeStep < tempThreshold, and thereafter
+    uses temp=0.
+
+    Returns:
+        trainExamples: a list of examples of the form (canonicalBoard,pi,v)
+                       pi is the MCTS informed policy vector, v is +1 if
+                       the player eventually won the game, else -1.
+    """
+    trainExamples = []
+    board = game.getInitBoard()
+    curPlayer = 1
+    episodeStep = 0
+
+    while True:
+        episodeStep += 1
+        canonicalBoard = game.getCanonicalForm(board, curPlayer)
+        temp = int(episodeStep < args.tempThreshold)
+
+        pi = mcts.getActionProb(canonicalBoard, temp=temp)
+        sym = game.getSymmetries(canonicalBoard, pi)
+        for b, p in sym:
+            trainExamples.append([b, curPlayer, p, None])
+
+        action = np.random.choice(len(pi), p=pi)
+        print(action, pi)
+        board, curPlayer = game.getNextState(board, curPlayer, action)
+
+        r = game.getGameEnded(board, curPlayer)
+
+        if r != 0:
+            return [(x[0], x[2], r * ((-1) ** (x[1] != curPlayer))) for x in trainExamples]

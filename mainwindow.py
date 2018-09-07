@@ -7,14 +7,21 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
 
 from ai.MCTS import MCTS
-# from ai.othello.OthelloGame import OthelloGame as g
-# from ai.othello.keras.NNet import NNetWrapper as NNet
+from ai.othello.OthelloGame import OthelloGame as Og
+from ai.othello.keras.NNet import NNetWrapper as ONNet
 
-from ai.gobang.GobangGame import GobangGame as g
-from ai.gobang.keras.NNet import NNetWrapper as NNet
+from ai.gobang.GobangGame import GobangGame as Gg
+from ai.gobang.keras.NNet import NNetWrapper as GNNet
+
+from ai.connect4.Connect4Game import Connect4Game as Cg
+from ai.connect4.keras.NNet import NNetWrapper as CNNet
 from ai.utils import *
 
 import numpy as np
+
+
+g = Og
+NNet = ONNet
 
 
 class Ui_MainWindow:
@@ -178,8 +185,9 @@ class QMainScreen(QMainWindow):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.scene = graphicsScene()
+        self.scene = QtWidgets.QGraphicsScene()
         self.scene.mouseReleaseEvent = self.updateText
+        self.scene.mousePressEvent = self.scene_mousePressEvent
         self.ui.graphicsViewBoard.setScene(self.scene)
         self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
         self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
@@ -216,8 +224,8 @@ class QMainScreen(QMainWindow):
 
     def startButton_click(self):
         global game, board, turn, n1, args1, mcts1, mctsplayer, WHITE, BLACK, AI
-        # weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
-        weights = ['checkpoint_18.pth.tar', 'gobang_8x8x103.pth.tar']
+        weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
+        # weights = ['checkpoint_18.pth.tar', 'gobang_8x8x103.pth.tar']
         epch = self.ui.comboBoxWeightsName.currentIndex()
         turn = 1
         board = game.getInitBoard()
@@ -230,7 +238,7 @@ class QMainScreen(QMainWindow):
         mcts1 = MCTS(game, n1, args1)
         mctsplayer = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
-        self.scene.refresh()
+        self.refresh()
         if AI:
             self.scene.mousePressEvent(None)
         ended = game.getGameEnded(board, 1)
@@ -250,17 +258,7 @@ class QMainScreen(QMainWindow):
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
         self.update()
 
-
-class graphicsScene(QtWidgets.QGraphicsScene):
-    r"""
-        So there is ways to override method which means this class is now useless.
-        If you (or me) feel ill with global variables lets put code below to Mainscreen class
-    """
-
-    def __init__(self, parent=None):
-        super(graphicsScene, self).__init__(parent)
-
-    def mousePressEvent(self, event):
+    def scene_mousePressEvent(self, event):
         global turn, game, board, mctsplayer, AI
         if event is not None:
             x = int(event.scenePos().x() // 62)
@@ -284,9 +282,9 @@ class graphicsScene(QtWidgets.QGraphicsScene):
 
             pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
             if turn == 1:
-                self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
             elif turn == -1:
-                self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+                self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
             board, turn = game.getNextState(board, turn, action)
         else:
             turn *= -1
@@ -299,7 +297,7 @@ class graphicsScene(QtWidgets.QGraphicsScene):
 
     def refresh(self):
         global hint, BLACK, WHITE
-        self.clear()
+        self.scene.clear()
         pen = QtGui.QPen(QtCore.Qt.black)
         side = 62
         WHITE = 0
@@ -311,12 +309,12 @@ class graphicsScene(QtWidgets.QGraphicsScene):
                 r = QtCore.QRectF(QtCore.QPointF(i * side, j * side), QtCore.QSizeF(side, side))
                 pr = QtCore.QRectF(QtCore.QPointF(i * side + 5, j * side + 5), QtCore.QSizeF(side - 10, side - 10))
                 sr = QtCore.QRectF(QtCore.QPointF(i * side + 20, j * side + 20), QtCore.QSizeF(side - 40, side - 40))
-                self.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
+                self.scene.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
                 if board[i][j] == b:
-                    self.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
                     BLACK += 1
                 elif board[i][j] == w:
-                    self.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
                     WHITE += 1
                 elif valid[action] == 1 and hint:
-                    self.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.darkBlue))
+                    self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.darkBlue))
