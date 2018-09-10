@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 r"""
-    Behold, removing tf.Session() in the very first line will cause "interrupted by signal 11: SIGSEGV"
+    Behold, removing tf.Session() in the very first line will cause "interrupted by signal 11: SIGSEGV".
+    You need to initiate a Session to reserve GPU's memory for some reason.
+    At least, in my tensorflow 1.4.0.
 """
 import tensorflow as tf; tf.Session()
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets, QtGui, QtTest
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
 
@@ -18,6 +20,8 @@ from ai.connect4.Connect4Game import Connect4Game as Cg
 from ai.connect4.keras.NNet import NNetWrapper as CNNet
 from ai.utils import *
 from mainwindow import Ui_MainWindow
+
+import time
 import numpy as np
 
 
@@ -36,8 +40,8 @@ class QMainScreen(QMainWindow):
         self.ui.lineEditNumMCTSSims.setText("25")
         self.ui.textEditInfo.setReadOnly(True)
 
-        self.g = Cg
-        self.NNet = CNNet
+        self.g = Og
+        self.NNet = ONNet
 
         self.n = 0
         self.b = 1
@@ -58,7 +62,7 @@ class QMainScreen(QMainWindow):
         r"""
             A game to play and a board
         """
-        self.game = self.g(8, 8)
+        self.game = self.g(8)
         self.board = None
         self.n1 = self.NNet(self.game)
         r"""
@@ -97,7 +101,7 @@ class QMainScreen(QMainWindow):
         epch = self.ui.comboBoxWeightsName.currentIndex()
         self.turn = 1
         self.board = self.game.getInitBoard()
-        # self.n1.load_checkpoint('ai/weights/', weights[epch])
+        self.n1.load_checkpoint('ai/weights/', weights[epch])
         try:
             nsims = int(self.ui.lineEditNumMCTSSims.text())
             self.args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
@@ -143,27 +147,28 @@ class QMainScreen(QMainWindow):
                 return
             elif event is None:
                 if self.AI:
-                    action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
-                    self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
-
-                self.refresh()
-                self.update()
+                    self.aimove()
                 return
 
-            pr = QtCore.QRectF(QtCore.QPointF(x*62+5, y*62+5), QtCore.QSizeF(52, 52))
-            if self.turn == 1:
-                self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
-            elif self.turn == -1:
-                self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
             self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         else:
             self.turn *= -1
         if self.AI and self.game.getGameEnded(self.board, 1) == 0:
-            action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
-            self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
+            self.refresh()
+            QtTest.QTest.qWait(200)
+            while True:
+                self.aimove()
+                valid = self.game.getValidMoves(self.board, self.turn)
+                if np.sum(valid[:-1]) > 0:
+                    break
+                else:
+                    self.turn *= -1
+                    QtTest.QTest.qWait(600)
 
+    def aimove(self):
+        action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
+        self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         self.refresh()
-        self.update()
 
     def refresh(self):
         self.scene.clear()
@@ -191,3 +196,4 @@ class QMainScreen(QMainWindow):
                     self.WHITE += 1
                 elif valid[action] == 1 and self.hint:
                     self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.darkBlue))
+        self.update()
