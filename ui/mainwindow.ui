@@ -56,7 +56,7 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
      <property name="spacing">
       <number>12</number>
      </property>
@@ -94,25 +94,29 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Human Players</string>
+           <string>numMctsSims</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEditTimeLimit"/>
-        </item>
-        <item row="3" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>Time Limit (sec)</string>
+           <string>weights</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="comboBoxNumberOfHumans">
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEditNumMCTSSims">
+          <property name="text">
+           <string>25</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QComboBox" name="comboBoxWeightsName">
           <item>
            <property name="text">
             <string>1</string>
@@ -123,6 +127,20 @@
             <string>2</string>
            </property>
           </item>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonAIToggle">
+          <property name="text">
+           <string>AI Off</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonHintToggle">
+          <property name="text">
+           <string>Hint Toggle</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -142,24 +160,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QTextEdit" name="textEditInfo"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>7</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Game Events</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QTextEdit" name="textEditEvents"/>
         </item>
        </layout>
       </widget>
