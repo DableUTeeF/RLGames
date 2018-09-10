@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 r"""
-    Behold, removing tf.Session() in the very first line will cause "signal 11: SIGSEGV"
+    Behold, removing tf.Session() in the very first line will cause "interrupted by signal 11: SIGSEGV"
 """
-import tensorflow as tf
-tf.Session()
+import tensorflow as tf; tf.Session()
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
@@ -165,8 +164,8 @@ class QMainScreen(QMainWindow):
         self.ui.lineEditNumMCTSSims.setText("25")
         self.ui.textEditInfo.setReadOnly(True)
 
-        self.g = Og
-        self.NNet = ONNet
+        self.g = Cg
+        self.NNet = CNNet
 
         self.n = 0
         self.b = 1
@@ -187,7 +186,7 @@ class QMainScreen(QMainWindow):
         r"""
             A game to play and a board
         """
-        self.game = self.g(8)
+        self.game = self.g(8, 8)
         self.board = None
         self.n1 = self.NNet(self.game)
         r"""
@@ -221,12 +220,12 @@ class QMainScreen(QMainWindow):
         self.refresh()
 
     def startButton_click(self):
-        weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
-        # weights = ['checkpoint_18.pth.tar', 'gobang_8x8x103.pth.tar']
+        # weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
+        weights = ['connect4_8x8x52.pth.tar', 'connect4_8x8x7.pth.tar']
         epch = self.ui.comboBoxWeightsName.currentIndex()
         self.turn = 1
         self.board = self.game.getInitBoard()
-        n1.load_checkpoint('ai/weights/', weights[epch])
+        self.n1.load_checkpoint('ai/weights/', weights[epch])
         try:
             nsims = int(self.ui.lineEditNumMCTSSims.text())
             self.args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
@@ -237,7 +236,7 @@ class QMainScreen(QMainWindow):
 
         self.refresh()
         if self.AI:
-            self.scene.mousePressEvent(None)
+            self.scene_mousePressEvent(None)
         ended = self.game.getGameEnded(self.board, 1)
         if self.AI:
             ais = f"AI is playing {'white' if self.turn == 1 else 'black'}"
@@ -300,12 +299,12 @@ class QMainScreen(QMainWindow):
         side = 62
         self.WHITE = 0
         self.BLACK = 0
-        for x in range(8):
-            for y in range(8):
+        for y in range(8):
+            for x in range(8):
                 if self.g == Og or self.g == Gg:
-                    action = x * 8 + y
+                    action = y * 8 + x
                 else:
-                    action = x
+                    action = y
 
                 valid = self.game.getValidMoves(self.board, self.turn)
                 r = QtCore.QRectF(QtCore.QPointF(x * side, y * side), QtCore.QSizeF(side, side))
