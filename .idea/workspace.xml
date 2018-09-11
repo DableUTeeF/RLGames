@@ -4,10 +4,6 @@
     <list default="true" id="f8c6b2a9-b5a6-4ef3-a4e0-0d846d6bd508" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainscreen.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainscreen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/newgame.py" beforeDir="false" afterPath="$PROJECT_DIR$/newgame.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/mainwindow.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/mainwindow.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/newgame.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/newgame.ui" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,7 +17,7 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="40">
               <caret line="2" column="31" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
             </state>
           </provider>
@@ -30,7 +26,7 @@
       <file leaf-file-name="Connect4Game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ai/connect4/Connect4Game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="369">
+            <state relative-caret-position="1300">
               <caret line="65" column="19" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="19" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
@@ -42,16 +38,21 @@
       <file leaf-file-name="mainscreen.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mainscreen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="286" column="22" lean-forward="true" selection-start-line="286" selection-start-column="22" selection-end-line="286" selection-end-column="22" />
+            <state relative-caret-position="329">
+              <caret line="278" column="34" selection-start-line="278" selection-start-column="34" selection-end-line="278" selection-end-column="34" />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="stone_1.svg" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/img/stone_1.svg">
+          <provider selected="true" editor-type-id="images" />
         </entry>
       </file>
       <file leaf-file-name="mainwindow.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mainwindow.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="309">
+            <state relative-caret-position="580">
               <caret line="29" column="38" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
             </state>
           </provider>
@@ -60,7 +61,7 @@
       <file leaf-file-name="newgame.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/newgame.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-360">
+            <state relative-caret-position="480">
               <caret line="24" column="50" selection-start-line="24" selection-start-column="50" selection-end-line="24" selection-end-column="50" />
             </state>
           </provider>
@@ -147,6 +148,7 @@
         <option value="$PROJECT_DIR$/img/stone_h.svg" />
         <option value="$PROJECT_DIR$/img/stone_h1.svg" />
         <option value="$PROJECT_DIR$/img/stone_h0.svg" />
+        <option value="$PROJECT_DIR$/img/stone_1.svg" />
         <option value="$PROJECT_DIR$/mainscreen.py" />
       </list>
     </option>
@@ -162,6 +164,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -169,11 +172,15 @@
               <item name="RLGames" type="b2602c69:ProjectViewProjectNode" />
               <item name="RLGames" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="RLGames" type="b2602c69:ProjectViewProjectNode" />
+              <item name="RLGames" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -332,7 +339,6 @@
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24960877" />
       <window_info anchor="bottom" id="TODO" order="5" />
       <window_info anchor="bottom" id="Event Log" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32917318" />
       <window_info active="true" anchor="bottom" id="Run" order="10" visible="true" weight="0.31513262" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32917318" />
       <window_info anchor="bottom" id="Python Console" order="9" weight="0.34321374" />
@@ -346,6 +352,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32917318" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -470,9 +477,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
           <caret line="39" column="8" selection-start-line="39" selection-start-column="8" selection-end-line="39" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#34#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -519,7 +523,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="40">
           <caret line="2" column="31" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
         </state>
       </provider>
@@ -559,13 +563,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/svgviewer_rc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="244" column="53" lean-forward="true" selection-start-line="244" selection-start-column="53" selection-end-line="244" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/svgviewer_rc.py" />
     <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/2022905153/PyQt5/QtSvg.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="621">
@@ -575,7 +573,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mainwindow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="309">
+        <state relative-caret-position="580">
           <caret line="29" column="38" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
         </state>
       </provider>
@@ -584,9 +582,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="174" column="55" lean-forward="true" selection-start-line="174" selection-start-column="55" selection-end-line="174" selection-end-column="55" />
-          <folding>
-            <element signature="e#2058#2099#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -601,9 +596,6 @@
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/img/stone_h-1.svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/img/stone_1.svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/img/stone_h1.svg">
@@ -621,7 +613,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ai/connect4/Connect4Game.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
+        <state relative-caret-position="1300">
           <caret line="65" column="19" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="19" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
@@ -655,7 +647,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/newgame.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-360">
+        <state relative-caret-position="480">
           <caret line="24" column="50" selection-start-line="24" selection-start-column="50" selection-end-line="24" selection-end-column="50" />
         </state>
       </provider>
@@ -698,10 +690,13 @@
     <entry file="file://$PROJECT_DIR$/img/stone_h0.svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/img/stone_1.svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/mainscreen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="286" column="22" lean-forward="true" selection-start-line="286" selection-start-column="22" selection-end-line="286" selection-end-column="22" />
+        <state relative-caret-position="329">
+          <caret line="278" column="34" selection-start-line="278" selection-start-column="34" selection-end-line="278" selection-end-column="34" />
         </state>
       </provider>
     </entry>

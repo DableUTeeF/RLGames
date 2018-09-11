@@ -103,6 +103,13 @@ class QMainScreen(QMainWindow):
             painter.fillRect(i+40, i+20, 520, 520, QtGui.QColor(10, 10, 10, int(40-1.25*i)))
         painter.fillRect(40, 20, 520, 520, QtGui.QColor(209, 143, 55))
 
+    def fillshadow(self, x, y, side):
+        for i in range(1, 4):
+            rect = QtCore.QRectF(QtCore.QPointF(x * side-i+9, y * side-i+9), QtCore.QSizeF(side-10, side-10))
+            self.scene.addEllipse(rect,
+                                  QtGui.QPen(QtGui.QColor(0, 0, 0, int(30+10*i))),
+                                  QtGui.QBrush(QtGui.QColor(0, 0, 0, int(30+10*i))))
+
     # -------------------------------- New Game -------------------------------- #
     def initiate_newgame(self):
         self.newgamewindow.whichGameBox.clear()
@@ -151,7 +158,7 @@ class QMainScreen(QMainWindow):
         self.AI = not self.AI
         self.refresh()
 
-    def updateText(self):
+    def updateText(self, ai=None):
         bfont = QFont()
         wfont = QFont()
         if self.g == Og:
@@ -177,30 +184,26 @@ class QMainScreen(QMainWindow):
         # humanpalette.setColor(humanpalette.Dark, QtGui.QColor(60, 60, 150))
         self.ui.whiteLcdNumber.setPalette(humanpalette)
         self.ui.blackLcdNumber.setPalette(aipalette)
+        if ai == -1:
+            self.ui.rightPlayerLabel.setText('AI')
+            self.ui.leftPlayerLabel.setText('Human')
+        elif ai == 1:
+            self.ui.leftPlayerLabel.setText('AI')
+            self.ui.rightPlayerLabel.setText('Human')
+        else:
+            self.ui.rightPlayerLabel.setText('Human')
+            self.ui.leftPlayerLabel.setText('Human')
         if self.turn == self.b:
             bfont.setBold(True)
             bfont.setUnderline(True)
             self.ui.blackLabel.setFont(bfont)
             self.ui.whiteLabel.setFont(wfont)
 
-            if self.ui.actionAI.isChecked():
-                self.ui.rightPlayerLabel.setText('AI')
-                self.ui.leftPlayerLabel.setText('Human')
-            else:
-                self.ui.rightPlayerLabel.setText('Human')
-                self.ui.leftPlayerLabel.setText('Human')
         else:
             wfont.setBold(True)
             wfont.setUnderline(True)
             self.ui.blackLabel.setFont(bfont)
             self.ui.whiteLabel.setFont(wfont)
-
-            if self.ui.actionAI.isChecked():
-                self.ui.rightPlayerLabel.setText('Human')
-                self.ui.leftPlayerLabel.setText('AI')
-            else:
-                self.ui.rightPlayerLabel.setText('Human')
-                self.ui.leftPlayerLabel.setText('Human')
 
     def hint_toggle(self, _):
         self.hint = ~self.hint
@@ -237,7 +240,7 @@ class QMainScreen(QMainWindow):
         if self.newgamewindow.aiTurnBox.isChecked():
             self.aimove()
         self.newgame.hide()
-        self.updateText()
+        self.updateText(ai=-self.turn)
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
         self.update()
@@ -257,7 +260,7 @@ class QMainScreen(QMainWindow):
         self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         self.recentMove = [x, y, self.turn]
         self.refresh()
-        self.updateText()
+        self.updateText(self.turn)
         if self.ui.actionAI.isChecked() and self.game.getGameEnded(self.board, self.turn) == 0:
             QtTest.QTest.qWait(200)
             while True:
@@ -273,7 +276,7 @@ class QMainScreen(QMainWindow):
         action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
         self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         self.recentMove = [action % 8, action // 8, self.turn]
-        self.updateText()
+        self.updateText(-self.turn)
         self.refresh()
 
     def refresh(self):
@@ -300,17 +303,19 @@ class QMainScreen(QMainWindow):
                 self.scene.addRect(rd, pend)
                 self.scene.addRect(rl, penl)
                 if self.board[y][x] == self.b:
+                    self.fillshadow(x, y, side)
                     stone = QtSvg.QGraphicsSvgItem('img/stone_1.svg')
                     stone.setPos(x * side + 5, y * side + 5)
-                    stone.setScale(1.25)
+                    stone.setScale(52/43)
                     self.scene.addItem(stone)
                     self.BLACK += 1
                     if [x, y, self.turn] == self.recentMove:
                         self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
                 elif self.board[y][x] == self.w:
+                    self.fillshadow(x, y, side)
                     stone = QtSvg.QGraphicsSvgItem('img/stone_-1.svg')
                     stone.setPos(x * side + 5, y * side + 5)
-                    stone.setScale(1.25)
+                    stone.setScale(52/43)
                     self.scene.addItem(stone)
                     self.WHITE += 1
                     if [x, y, self.turn] == self.recentMove:
@@ -323,6 +328,6 @@ class QMainScreen(QMainWindow):
                     else:
                         stone = QtSvg.QGraphicsSvgItem('img/stone_h1.svg')
                     stone.setPos(x * side + 20, y * side + 20)
-                    stone.setScale(.5)
+                    stone.setScale(22/43)
                     self.scene.addItem(stone)
         self.update()
