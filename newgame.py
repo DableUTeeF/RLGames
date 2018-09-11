@@ -8,14 +8,13 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_NewGame(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(300, 390)
-        Form.setMinimumSize(QtCore.QSize(300, 390))
-        Form.setMaximumSize(QtCore.QSize(300, 390))
-        self.MainFrame = QtWidgets.QFrame(Form)
+    def setupUi(self, NewGame):
+        NewGame.setObjectName("NewGame")
+        NewGame.resize(300, 390)
+        NewGame.setMinimumSize(QtCore.QSize(300, 390))
+        NewGame.setMaximumSize(QtCore.QSize(300, 390))
+        self.MainFrame = QtWidgets.QFrame(NewGame)
         self.MainFrame.setGeometry(QtCore.QRect(0, 0, 301, 391))
         self.MainFrame.setMinimumSize(QtCore.QSize(301, 391))
         self.MainFrame.setMaximumSize(QtCore.QSize(301, 391))
@@ -30,9 +29,9 @@ class Ui_NewGame(object):
         self.OKButton = QtWidgets.QPushButton(self.DecissionButtonsFrame)
         self.OKButton.setGeometry(QtCore.QRect(10, 10, 51, 25))
         self.OKButton.setObjectName("OKButton")
-        self.CancleButton = QtWidgets.QPushButton(self.DecissionButtonsFrame)
-        self.CancleButton.setGeometry(QtCore.QRect(70, 10, 89, 25))
-        self.CancleButton.setObjectName("CancleButton")
+        self.CancelButton = QtWidgets.QPushButton(self.DecissionButtonsFrame)
+        self.CancelButton.setGeometry(QtCore.QRect(70, 10, 89, 25))
+        self.CancelButton.setObjectName("CancelButton")
         self.ObjectFrame = QtWidgets.QFrame(self.MainFrame)
         self.ObjectFrame.setGeometry(QtCore.QRect(30, 30, 241, 291))
         self.ObjectFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -70,23 +69,23 @@ class Ui_NewGame(object):
         self.mctsSimsBox.setGeometry(QtCore.QRect(120, 140, 48, 26))
         self.mctsSimsBox.setMinimum(2)
         self.mctsSimsBox.setMaximum(100)
-        self.mctsSimsBox.setValue(25)
+        self.mctsSimsBox.setProperty("value", 25)
         self.mctsSimsBox.setObjectName("mctsSimsBox")
         self.boardSizeBox_h = QtWidgets.QComboBox(self.ObjectFrame)
         self.boardSizeBox_h.setGeometry(QtCore.QRect(170, 90, 41, 25))
         self.boardSizeBox_h.setObjectName("boardSizeBox_h")
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(NewGame)
+        QtCore.QMetaObject.connectSlotsByName(NewGame)
 
-    def retranslateUi(self, Form):
+    def retranslateUi(self, NewGame):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "New Game"))
-        self.OKButton.setText(_translate("Form", "OK"))
-        self.CancleButton.setText(_translate("Form", "cancle"))
-        self.whichGameLabel.setText(_translate("Form", "game"))
-        self.boardSizeLabel.setText(_translate("Form", "boardSize"))
-        self.mctsSimsLabel.setText(_translate("Form", "MCTSSims"))
-        self.weightLabel.setText(_translate("Form", "weight"))
-        self.aiTurnLabel.setText(_translate("Form", "AI first"))
+        NewGame.setWindowTitle(_translate("NewGame", "New Game"))
+        self.OKButton.setText(_translate("NewGame", "OK"))
+        self.CancelButton.setText(_translate("NewGame", "cancel"))
+        self.whichGameLabel.setText(_translate("NewGame", "game"))
+        self.boardSizeLabel.setText(_translate("NewGame", "boardSize"))
+        self.mctsSimsLabel.setText(_translate("NewGame", "MCTSSims"))
+        self.weightLabel.setText(_translate("NewGame", "weight"))
+        self.aiTurnLabel.setText(_translate("NewGame", "AI first"))
 

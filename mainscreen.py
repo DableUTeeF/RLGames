@@ -33,15 +33,16 @@ class QMainScreen(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.scene = QtWidgets.QGraphicsScene()
-        # self.scene.mouseReleaseEvent = self.updateText
         self.scene.mousePressEvent = self.scene_mousePressEvent
         self.ui.graphicsViewBoard.setScene(self.scene)
+        self.ui.graphicsViewBoard.setFixedSize(499, 499)
         self.ui.actionNewGame.triggered.connect(self.startButton_click)
         self.ui.actionHint.triggered.connect(self.hint_toggle)
         self.ui.actionAI.triggered.connect(self.ai_toggle)
         self.ui.blackLcdNumber.setSegmentStyle(QtWidgets.QLCDNumber.Filled)
         self.ui.whiteLcdNumber.setSegmentStyle(QtWidgets.QLCDNumber.Filled)
         # self.ui.statusBar.hide()
+        self.setFixedSize(self.size())
 
         self.bg = ImageQt.ImageQt(Image.open('img/board2.png'))
         self.tatami = QImage('img/tatami.png').mirrored()
@@ -49,6 +50,9 @@ class QMainScreen(QMainWindow):
         # noinspection PyTypeChecker
         palette.setBrush(10, QBrush(self.tatami))
         self.setPalette(palette)
+
+        self.repaint()
+
         self.newgame = QtWidgets.QMdiSubWindow()
         self.newgamewindow = Ui_NewGame()
         self.newgamewindow.setupUi(self.newgame)
@@ -56,7 +60,7 @@ class QMainScreen(QMainWindow):
         self.newgamewindow.whichGameBox.currentIndexChanged.connect(self.whichGameChanged)
         self.newgamewindow.boardSizeBox_h.currentIndexChanged.connect(self.newwindow_boardsize_h)
         self.newgamewindow.boardSizeBox_w.currentIndexChanged.connect(self.newwindow_boardsize_w)
-        self.newgamewindow.CancleButton.clicked.connect(self.cancleclick)
+        self.newgamewindow.CancelButton.clicked.connect(self.cancelclick)
         self.newgamewindow.OKButton.clicked.connect(self.startgame)
         self.initiate_newgame()
 
@@ -93,17 +97,17 @@ class QMainScreen(QMainWindow):
         self.WHITE = 0
         self.startgame(None)
 
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        for i in range(1, 8):
+            painter.fillRect(i+40, i+20, 520, 520, QtGui.QColor(10, 10, 10, int(40-1.25*i)))
+        painter.fillRect(40, 20, 520, 520, QtGui.QColor(209, 143, 55))
+
     # -------------------------------- New Game -------------------------------- #
     def initiate_newgame(self):
         self.newgamewindow.whichGameBox.clear()
         self.newgamewindow.whichGameBox.addItem('Othello')
         self.newgamewindow.whichGameBox.addItem('Connect4')
-        self.newgamewindow.boardSizeBox_h.addItem('6')
-        self.newgamewindow.boardSizeBox_w.addItem('6')
-        self.newgamewindow.boardSizeBox_h.addItem('8')
-        self.newgamewindow.boardSizeBox_w.addItem('8')
-        self.newgamewindow.boardSizeBox_h.addItem('10')
-        self.newgamewindow.boardSizeBox_w.addItem('10')
 
     def newwindow_boardsize_h(self, _):
         if self.newgamewindow.whichGameBox.currentIndex() == 0:
@@ -139,7 +143,7 @@ class QMainScreen(QMainWindow):
                 if file.startswith('connect4'):
                     self.newgamewindow.weightBox.addItem(file)
 
-    def cancleclick(self, _):
+    def cancelclick(self, _):
         self.newgame.hide()
     # ------------------------------ Main Window ------------------------------- #
 
@@ -148,12 +152,18 @@ class QMainScreen(QMainWindow):
         self.refresh()
 
     def updateText(self):
-        if self.game.getGameEnded(self.board, self.turn):
-            return
         bfont = QFont()
         wfont = QFont()
-        self.ui.blackLcdNumber.display(str(self.BLACK))
-        self.ui.whiteLcdNumber.display(str(self.WHITE))
+        if self.g == Og:
+            self.ui.blackLcdNumber.display(str(self.BLACK))
+            self.ui.whiteLcdNumber.display(str(self.WHITE))
+        else:
+            pi, v = self.n1.predict(self.game.getCanonicalForm(self.board, self.b))
+            self.ui.blackLcdNumber.display(str(int((v+1)*50)))
+            self.ui.whiteLcdNumber.display(str(int(100-((v+1)*50))))
+        if self.game.getGameEnded(self.board, self.turn):
+            return
+
         aipalette = self.ui.whiteLcdNumber.palette()
         humanpalette = self.ui.blackLcdNumber.palette()
         # Text
@@ -167,7 +177,6 @@ class QMainScreen(QMainWindow):
         # humanpalette.setColor(humanpalette.Dark, QtGui.QColor(60, 60, 150))
         self.ui.whiteLcdNumber.setPalette(humanpalette)
         self.ui.blackLcdNumber.setPalette(aipalette)
-
         if self.turn == self.b:
             bfont.setBold(True)
             bfont.setUnderline(True)
@@ -201,15 +210,6 @@ class QMainScreen(QMainWindow):
         self.newgame.show()
 
     def startgame(self, _):
-        if self.newgamewindow.whichGameBox.currentIndex() == 0:
-            # self.resize(600, 600)
-            self.setFixedSize(self.size())
-            self.ui.frame.show()
-        else:
-            # self.resize(600, 600)
-            self.setFixedSize(self.size())
-            self.ui.frame.hide()
-
         if self.newgamewindow.whichGameBox.currentIndex() == 0 and self.g != Og:
             self.g = Og
             self.NNet = ONNet
@@ -257,27 +257,29 @@ class QMainScreen(QMainWindow):
         self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         self.recentMove = [x, y, self.turn]
         self.refresh()
-        if self.ui.actionAI.isChecked() and self.game.getGameEnded(self.board, 1) == 0:
+        self.updateText()
+        if self.ui.actionAI.isChecked() and self.game.getGameEnded(self.board, self.turn) == 0:
             QtTest.QTest.qWait(200)
             while True:
                 self.aimove()
                 valid = self.game.getValidMoves(self.board, self.turn)
-                if np.sum(valid[:-1]) > 0:
+                if np.sum(valid[:-1]) > 0 or self.game.getGameEnded(self.board, self.turn) != 0:
                     break
                 else:
                     self.turn *= -1
                     QtTest.QTest.qWait(600)
-        self.updateText()
 
     def aimove(self):
         action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
         self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
         self.recentMove = [action % 8, action // 8, self.turn]
+        self.updateText()
         self.refresh()
 
     def refresh(self):
         self.scene.clear()
-        pen = QtGui.QPen(QtCore.Qt.black)
+        pend = QtGui.QPen(QtGui.QColor(94, 46, 12))
+        penl = QtGui.QPen(QtGui.QColor(209, 143, 55))
         pixMap = QtGui.QPixmap.fromImage(self.bg)
         self.scene.addPixmap(pixMap)
         # self.ui.graphicsViewBoard.bac
@@ -292,9 +294,11 @@ class QMainScreen(QMainWindow):
                     action = y
 
                 valid = self.game.getValidMoves(self.board, self.turn)
-                r = QtCore.QRectF(QtCore.QPointF(x * side, y * side), QtCore.QSizeF(side, side))
+                rd = QtCore.QRectF(QtCore.QPointF(x * side, y * side), QtCore.QSizeF(side, side))
+                rl = QtCore.QRectF(QtCore.QPointF(x * side+1, y * side+1), QtCore.QSizeF(side, side))
                 sr = QtCore.QRectF(QtCore.QPointF(x * side + 25, y * side + 25), QtCore.QSizeF(side - 48, side - 48))
-                self.scene.addRect(r, pen)
+                self.scene.addRect(rd, pend)
+                self.scene.addRect(rl, penl)
                 if self.board[y][x] == self.b:
                     stone = QtSvg.QGraphicsSvgItem('img/stone_1.svg')
                     stone.setPos(x * side + 5, y * side + 5)

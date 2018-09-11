@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         self.centralWidget.setSizePolicy(sizePolicy)
         self.centralWidget.setObjectName("centralWidget")
         self.graphicsViewBoard = QtWidgets.QGraphicsView(self.centralWidget)
-        self.graphicsViewBoard.setGeometry(QtCore.QRect(50, 40, 500, 500))
+        self.graphicsViewBoard.setGeometry(QtCore.QRect(50, 30, 500, 500))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

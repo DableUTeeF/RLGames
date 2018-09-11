@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>NewGame</class>
+ <widget class="QWidget" name="NewGame">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -80,7 +80,7 @@
       <string>OK</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="CancleButton">
+    <widget class="QPushButton" name="CancelButton">
      <property name="geometry">
       <rect>
        <x>70</x>
@@ -90,7 +90,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>cancle</string>
+      <string>cancel</string>
      </property>
     </widget>
    </widget>
@@ -231,6 +231,9 @@
      </property>
      <property name="maximum">
       <number>100</number>
+     </property>
+     <property name="value">
+      <number>25</number>
      </property>
     </widget>
     <widget class="QComboBox" name="boardSizeBox_h">
