@@ -5,10 +5,11 @@ r"""
     At least, in my tensorflow 1.4.0.
 """
 import tensorflow as tf; tf.Session()
-from PyQt5 import QtCore, QtWidgets, QtGui, QtTest
+from PyQt5 import QtCore, QtWidgets, QtGui, QtTest, QtSvg
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow
-
+from PyQt5.QtGui import QFont, QImage, QPalette, QBrush
+from PIL import ImageQt, Image
 from ai.MCTS import MCTS
 from ai.othello.OthelloGame import OthelloGame as Og
 from ai.othello.keras.NNet import NNetWrapper as ONNet
@@ -23,6 +24,7 @@ from mainwindow import Ui_MainWindow
 from newgame import Ui_NewGame
 import time
 import numpy as np
+import os
 
 
 class QMainScreen(QMainWindow):
@@ -31,18 +33,26 @@ class QMainScreen(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.scene = QtWidgets.QGraphicsScene()
-        self.scene.mouseReleaseEvent = self.updateText
+        # self.scene.mouseReleaseEvent = self.updateText
         self.scene.mousePressEvent = self.scene_mousePressEvent
         self.ui.graphicsViewBoard.setScene(self.scene)
-        self.ui.pushButtonNewGame.clicked.connect(self.startButton_click)
-        self.ui.pushButtonHintToggle.clicked.connect(self.hint_toggle)
-        self.ui.pushButtonAIToggle.clicked.connect(self.ai_toggle)
-        self.ui.lineEditNumMCTSSims.setText("25")
-        self.ui.textEditInfo.setReadOnly(True)
+        self.ui.actionNewGame.triggered.connect(self.startButton_click)
+        self.ui.actionHint.triggered.connect(self.hint_toggle)
+        self.ui.actionAI.triggered.connect(self.ai_toggle)
+        self.ui.blackLcdNumber.setSegmentStyle(QtWidgets.QLCDNumber.Filled)
+        self.ui.whiteLcdNumber.setSegmentStyle(QtWidgets.QLCDNumber.Filled)
+        # self.ui.statusBar.hide()
 
+        self.bg = ImageQt.ImageQt(Image.open('img/board2.png'))
+        self.tatami = QImage('img/tatami.png').mirrored()
+        palette = QPalette()
+        # noinspection PyTypeChecker
+        palette.setBrush(10, QBrush(self.tatami))
+        self.setPalette(palette)
         self.newgame = QtWidgets.QMdiSubWindow()
         self.newgamewindow = Ui_NewGame()
         self.newgamewindow.setupUi(self.newgame)
+        self.newgame.setFixedSize(self.newgame.size())
         self.newgamewindow.whichGameBox.currentIndexChanged.connect(self.whichGameChanged)
         self.newgamewindow.boardSizeBox_h.currentIndexChanged.connect(self.newwindow_boardsize_h)
         self.newgamewindow.boardSizeBox_w.currentIndexChanged.connect(self.newwindow_boardsize_w)
@@ -53,6 +63,7 @@ class QMainScreen(QMainWindow):
         self.g = Og
         self.NNet = ONNet
 
+        self.recentMove = [0, 0, 0]
         self.n = 0
         self.b = 1
         self.w = -1
@@ -115,48 +126,105 @@ class QMainScreen(QMainWindow):
         self.newgamewindow.boardSizeBox_w.addItem('8')
         self.newgamewindow.boardSizeBox_h.addItem('10')
         self.newgamewindow.boardSizeBox_w.addItem('10')
+        self.newgamewindow.boardSizeBox_h.setCurrentIndex(1)
+        self.newgamewindow.boardSizeBox_w.setCurrentIndex(1)
 
         # ------ Weights ------ #
-        self.newgamewindow.weightBox.addItem('0')
-        self.newgamewindow.weightBox.addItem('1')
+        self.newgamewindow.weightBox.clear()
+        for file in os.listdir('ai/weights'):
+            if self.newgamewindow.whichGameBox.currentIndex() == 0:
+                if file.startswith('othello'):
+                    self.newgamewindow.weightBox.addItem(file)
+            elif self.newgamewindow.whichGameBox.currentIndex() == 1:
+                if file.startswith('connect4'):
+                    self.newgamewindow.weightBox.addItem(file)
 
     def cancleclick(self, _):
         self.newgame.hide()
     # ------------------------------ Main Window ------------------------------- #
 
-    def ai_toggle(self):
-        self.ui.pushButtonAIToggle.setText("AI on" if self.AI else "AI off")
+    def ai_toggle(self, _):
         self.AI = not self.AI
+        self.refresh()
 
-    def updateText(self, _):
-        ended = self.game.getGameEnded(self.board, 1)
-        if self.AI:
-            ais = f"AI is playing {'white' if self.turn == 1 else 'black'}"
-        else:
-            ais = "AI is off"
-        if ended == 1:
-            endtext = 'Black won'
-        elif ended == -1:
-            endtext = 'White won'
-        else:
-            endtext = 'No one is won'
-        self.ui.textEditInfo.setText(f'{ais}, mctsSims: {self.ui.lineEditNumMCTSSims.text()}\n'
-                                     f'WHITE: {self.WHITE}, BLACK: {self.BLACK}\n{endtext}')
+    def updateText(self):
+        if self.game.getGameEnded(self.board, self.turn):
+            return
+        bfont = QFont()
+        wfont = QFont()
+        self.ui.blackLcdNumber.display(str(self.BLACK))
+        self.ui.whiteLcdNumber.display(str(self.WHITE))
+        aipalette = self.ui.whiteLcdNumber.palette()
+        humanpalette = self.ui.blackLcdNumber.palette()
+        # Text
+        aipalette.setColor(aipalette.WindowText, QtGui.QColor(255, 0, 0))
+        humanpalette.setColor(humanpalette.WindowText, QtGui.QColor(0, 0, 255))
+        # # "light" border
+        aipalette.setColor(aipalette.Light, QtGui.QColor(255, 85, 85))
+        humanpalette.setColor(humanpalette.Light, QtGui.QColor(85, 85, 255))
+        # # "dark" border
+        # aipalette.setColor(aipalette.Dark, QtGui.QColor(150, 60, 60))
+        # humanpalette.setColor(humanpalette.Dark, QtGui.QColor(60, 60, 150))
+        self.ui.whiteLcdNumber.setPalette(humanpalette)
+        self.ui.blackLcdNumber.setPalette(aipalette)
 
-    def hint_toggle(self):
+        if self.turn == self.b:
+            bfont.setBold(True)
+            bfont.setUnderline(True)
+            self.ui.blackLabel.setFont(bfont)
+            self.ui.whiteLabel.setFont(wfont)
+
+            if self.ui.actionAI.isChecked():
+                self.ui.rightPlayerLabel.setText('AI')
+                self.ui.leftPlayerLabel.setText('Human')
+            else:
+                self.ui.rightPlayerLabel.setText('Human')
+                self.ui.leftPlayerLabel.setText('Human')
+        else:
+            wfont.setBold(True)
+            wfont.setUnderline(True)
+            self.ui.blackLabel.setFont(bfont)
+            self.ui.whiteLabel.setFont(wfont)
+
+            if self.ui.actionAI.isChecked():
+                self.ui.rightPlayerLabel.setText('Human')
+                self.ui.leftPlayerLabel.setText('AI')
+            else:
+                self.ui.rightPlayerLabel.setText('Human')
+                self.ui.leftPlayerLabel.setText('Human')
+
+    def hint_toggle(self, _):
         self.hint = ~self.hint
         self.refresh()
 
-    def startButton_click(self):
+    def startButton_click(self, _):
         self.newgame.show()
 
     def startgame(self, _):
-        weights = ['othello_8x8x60_best.pth.tar', 'othello_8x8x73_best.pth.tar']
-        # weights = ['connect4_8x8x52.pth.tar', 'connect4_8x8x7.pth.tar']
-        epch = self.newgamewindow.weightBox.currentIndex()
+        if self.newgamewindow.whichGameBox.currentIndex() == 0:
+            # self.resize(600, 600)
+            self.setFixedSize(self.size())
+            self.ui.frame.show()
+        else:
+            # self.resize(600, 600)
+            self.setFixedSize(self.size())
+            self.ui.frame.hide()
+
+        if self.newgamewindow.whichGameBox.currentIndex() == 0 and self.g != Og:
+            self.g = Og
+            self.NNet = ONNet
+            self.game = self.g(int(self.newgamewindow.boardSizeBox_h.currentText()))
+            self.n1 = self.NNet(self.game)
+        elif self.newgamewindow.whichGameBox.currentIndex() == 1 and self.g != Cg:
+            self.g = Cg
+            self.NNet = CNNet
+            self.game = self.g(int(self.newgamewindow.boardSizeBox_w.currentText()),
+                               int(self.newgamewindow.boardSizeBox_h.currentText()))
+            self.n1 = self.NNet(self.game)
+        weights = self.newgamewindow.weightBox.currentText()
         self.turn = 1
         self.board = self.game.getInitBoard()
-        self.n1.load_checkpoint('ai/weights/', weights[epch])
+        self.n1.load_checkpoint('ai/weights/', weights)
         try:
             nsims = int(self.newgamewindow.mctsSimsBox.value())
             self.args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
@@ -166,9 +234,10 @@ class QMainScreen(QMainWindow):
         self.mctsplayer = lambda x: np.argmax(self.mcts1.getActionProb(x, temp=0))
 
         self.refresh()
-        if self.AI:
+        if self.newgamewindow.aiTurnBox.isChecked():
             self.aimove()
-        self.updateText(None)
+        self.newgame.hide()
+        self.updateText()
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent):
         self.update()
@@ -186,8 +255,9 @@ class QMainScreen(QMainWindow):
             return
 
         self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
-        if self.AI and self.game.getGameEnded(self.board, 1) == 0:
-            self.refresh()
+        self.recentMove = [x, y, self.turn]
+        self.refresh()
+        if self.ui.actionAI.isChecked() and self.game.getGameEnded(self.board, 1) == 0:
             QtTest.QTest.qWait(200)
             while True:
                 self.aimove()
@@ -197,17 +267,20 @@ class QMainScreen(QMainWindow):
                 else:
                     self.turn *= -1
                     QtTest.QTest.qWait(600)
-        else:
-            self.refresh()
+        self.updateText()
 
     def aimove(self):
         action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
         self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
+        self.recentMove = [action % 8, action // 8, self.turn]
         self.refresh()
 
     def refresh(self):
         self.scene.clear()
         pen = QtGui.QPen(QtCore.Qt.black)
+        pixMap = QtGui.QPixmap.fromImage(self.bg)
+        self.scene.addPixmap(pixMap)
+        # self.ui.graphicsViewBoard.bac
         side = 62
         self.WHITE = 0
         self.BLACK = 0
@@ -220,16 +293,32 @@ class QMainScreen(QMainWindow):
 
                 valid = self.game.getValidMoves(self.board, self.turn)
                 r = QtCore.QRectF(QtCore.QPointF(x * side, y * side), QtCore.QSizeF(side, side))
-                pr = QtCore.QRectF(QtCore.QPointF(x * side + 5, y * side + 5), QtCore.QSizeF(side - 10, side - 10))
-                sr = QtCore.QRectF(QtCore.QPointF(x * side + 20, y * side + 20), QtCore.QSizeF(side - 40, side - 40))
-                self.scene.addRect(r, pen, QtGui.QBrush(QtCore.Qt.darkGreen))
+                sr = QtCore.QRectF(QtCore.QPointF(x * side + 25, y * side + 25), QtCore.QSizeF(side - 48, side - 48))
+                self.scene.addRect(r, pen)
                 if self.board[y][x] == self.b:
-                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                    stone = QtSvg.QGraphicsSvgItem('img/stone_1.svg')
+                    stone.setPos(x * side + 5, y * side + 5)
+                    stone.setScale(1.25)
+                    self.scene.addItem(stone)
                     self.BLACK += 1
+                    if [x, y, self.turn] == self.recentMove:
+                        self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
                 elif self.board[y][x] == self.w:
-                    self.scene.addEllipse(pr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+                    stone = QtSvg.QGraphicsSvgItem('img/stone_-1.svg')
+                    stone.setPos(x * side + 5, y * side + 5)
+                    stone.setScale(1.25)
+                    self.scene.addItem(stone)
                     self.WHITE += 1
+                    if [x, y, self.turn] == self.recentMove:
+                        self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
                 elif valid[action] == 1 and self.hint:
-                    self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.darkBlue))
+                    if self.newgamewindow.aiTurnBox.isChecked() or self.AI:
+                        stone = QtSvg.QGraphicsSvgItem('img/stone_h0.svg')
+                    elif self.turn == self.w:
+                        stone = QtSvg.QGraphicsSvgItem('img/stone_h-1.svg')
+                    else:
+                        stone = QtSvg.QGraphicsSvgItem('img/stone_h1.svg')
+                    stone.setPos(x * side + 20, y * side + 20)
+                    stone.setScale(.5)
+                    self.scene.addItem(stone)
         self.update()
-        self.updateText(None)
