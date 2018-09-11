@@ -128,4 +128,3 @@ class Ui_MainWindow(object):
         self.pushButtonAIToggle.setText(_translate("MainWindow", "AI Off"))
         self.pushButtonHintToggle.setText(_translate("MainWindow", "Hint Toggle"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Game Info"))
-
