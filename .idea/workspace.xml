@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8c6b2a9-b5a6-4ef3-a4e0-0d846d6bd508" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainscreen.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainscreen.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -38,8 +37,8 @@
       <file leaf-file-name="mainscreen.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mainscreen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="329">
-              <caret line="278" column="34" selection-start-line="278" selection-start-column="34" selection-end-line="278" selection-end-column="34" />
+            <state relative-caret-position="69">
+              <caret line="303" column="63" lean-forward="true" selection-start-line="303" selection-start-column="63" selection-end-line="303" selection-end-column="64" />
             </state>
           </provider>
         </entry>
@@ -477,6 +476,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
           <caret line="39" column="8" selection-start-line="39" selection-start-column="8" selection-end-line="39" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#34#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -695,8 +697,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mainscreen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="329">
-          <caret line="278" column="34" selection-start-line="278" selection-start-column="34" selection-end-line="278" selection-end-column="34" />
+        <state relative-caret-position="69">
+          <caret line="303" column="63" lean-forward="true" selection-start-line="303" selection-start-column="63" selection-end-line="303" selection-end-column="64" />
         </state>
       </provider>
     </entry>
