@@ -26,6 +26,10 @@ import time
 import numpy as np
 import os
 
+# todo: 1.train with c4 weights(in progress)
+# todo: 2.train with head fixed weights(see testdiffheadandtop)
+# todo: 3.train from scratch
+
 
 class QMainScreen(QMainWindow):
     def __init__(self, parent=None):
@@ -224,16 +228,17 @@ class QMainScreen(QMainWindow):
         elif self.newgamewindow.whichGameBox.currentIndex() == 1:
             self.g = Cg
             self.NNet = CNNet
-            self.game = self.g(int(self.newgamewindow.boardSizeBox_w.currentText()),
-                               int(self.newgamewindow.boardSizeBox_h.currentText()))
+            self.game = self.g(int(self.newgamewindow.boardSizeBox_h.currentText()),
+                               int(self.newgamewindow.boardSizeBox_w.currentText()))
             self.n1 = self.NNet(self.game)
         weights = self.newgamewindow.weightBox.currentText()
         self.turn = 1
         self.board = self.game.getInitBoard()
+        self.n1.load_checkpoint('ai/weights/', weights)
         try:
             self.n1.load_checkpoint('ai/weights/', weights)
         except:
-            pass
+            print('Cannot load weights')
         try:
             nsims = int(self.newgamewindow.mctsSimsBox.value())
             self.args1 = dotdict({'numMCTSSims': nsims, 'cpuct': 1.0})
@@ -287,8 +292,8 @@ class QMainScreen(QMainWindow):
         self.recentMove = [action % int(self.newgamewindow.boardSizeBox_w.currentText()),
                            action // int(self.newgamewindow.boardSizeBox_h.currentText()),
                            self.turn]
-        self.updateText(-self.turn)
         self.refresh()
+        self.updateText(-self.turn)
 
     def refresh(self):
         self.scene.clear()
@@ -305,19 +310,20 @@ class QMainScreen(QMainWindow):
                 if self.g == Og or self.g == Gg:
                     action = y * int(self.newgamewindow.boardSizeBox_h.currentText()) + x
                 else:
-                    action = y
+                    action = x
 
                 valid = self.game.getValidMoves(self.board, self.turn)
-                rd = QtCore.QRectF(QtCore.QPointF(x * sidex, y * sidey), QtCore.QSizeF(sidey, sidex))
-                rl = QtCore.QRectF(QtCore.QPointF(x * sidex+1, y * sidey+1), QtCore.QSizeF(sidey, sidex))
-                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + 25, y * sidey + 25), QtCore.QSizeF(sidey - 48, sidex - 48))
+                rd = QtCore.QRectF(QtCore.QPointF(x * sidex, y * sidey), QtCore.QSizeF(sidex, sidey))
+                rl = QtCore.QRectF(QtCore.QPointF(x * sidex+1, y * sidey+1), QtCore.QSizeF(sidex, sidey))
+                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + 25, y * sidey + 25),
+                                   QtCore.QSizeF((sidey+sidex)/2 - 48, (sidey+sidex)/2 - 48))
                 self.scene.addRect(rd, pend)
-                self.scene.addRect(rl, penl)
+                # self.scene.addRect(rl, penl)
                 if self.board[y][x] == self.b:
                     # self.fillshadow(x, y, side)
                     stone = QtSvg.QGraphicsSvgItem('img/stone_1.svg')
                     stone.setPos(x * sidex + 5, y * sidey + 5)
-                    stone.setScale((sidex-10)/43)
+                    stone.setScale((min(sidex, sidey)-10)/43)
                     self.scene.addItem(stone)
                     self.BLACK += 1
                     if [x, y, self.turn] == self.recentMove:
@@ -328,7 +334,7 @@ class QMainScreen(QMainWindow):
                     # print(x, y)
                     stone = QtSvg.QGraphicsSvgItem('img/stone_-1.svg')
                     stone.setPos(x * sidex + 5, y * sidey + 5)
-                    stone.setScale((sidex-10)/43)
+                    stone.setScale((min(sidex, sidey)-10)/43)
                     self.scene.addItem(stone)
                     self.WHITE += 1
                     if [x, y, self.turn] == self.recentMove:
