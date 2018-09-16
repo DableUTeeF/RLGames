@@ -234,7 +234,6 @@ class QMainScreen(QMainWindow):
         weights = self.newgamewindow.weightBox.currentText()
         self.turn = 1
         self.board = self.game.getInitBoard()
-        self.n1.load_checkpoint('ai/weights/', weights)
         try:
             self.n1.load_checkpoint('ai/weights/', weights)
         except:
@@ -318,7 +317,7 @@ class QMainScreen(QMainWindow):
                 sr = QtCore.QRectF(QtCore.QPointF(x * sidex + 25, y * sidey + 25),
                                    QtCore.QSizeF((sidey+sidex)/2 - 48, (sidey+sidex)/2 - 48))
                 self.scene.addRect(rd, pend)
-                # self.scene.addRect(rl, penl)
+                self.scene.addRect(rl, penl)
                 if self.board[y][x] == self.b:
                     # self.fillshadow(x, y, side)
                     stone = QtSvg.QGraphicsSvgItem('img/stone_1.svg')
