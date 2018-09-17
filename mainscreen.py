@@ -314,7 +314,7 @@ class QMainScreen(QMainWindow):
                 valid = self.game.getValidMoves(self.board, self.turn)
                 rd = QtCore.QRectF(QtCore.QPointF(x * sidex, y * sidey), QtCore.QSizeF(sidex, sidey))
                 rl = QtCore.QRectF(QtCore.QPointF(x * sidex+1, y * sidey+1), QtCore.QSizeF(sidex, sidey))
-                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + 25, y * sidey + 25),
+                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + (sidex/2)-12, y * sidey + (sidey/2) - 12),
                                    QtCore.QSizeF((sidey+sidex)/2 - 48, (sidey+sidex)/2 - 48))
                 self.scene.addRect(rd, pend)
                 self.scene.addRect(rl, penl)
