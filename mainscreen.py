@@ -25,6 +25,7 @@ from newgame import Ui_NewGame
 import time
 import numpy as np
 import os
+import platform
 
 # todo: 1.train with c4 weights(in progress)
 # todo: 2.train with head fixed weights(see testdiffheadandtop)
@@ -46,7 +47,10 @@ class QMainScreen(QMainWindow):
         self.ui.blackLcdNumber.setSegmentStyle(QtWidgets.QLCDNumber.Filled)
         self.ui.whiteLcdNumber.setSegmentStyle(QtWidgets.QLCDNumber.Filled)
         # self.ui.statusBar.hide()
-        self.setFixedSize(self.size())
+        if platform.system() == 'Linux':
+            self.setFixedSize(self.size())
+        else:
+            self.setFixedSize(600, 625)
 
         self.bg = ImageQt.ImageQt(Image.open('img/board2.png'))
         self.tatami = QImage('img/tatami.png').mirrored()
@@ -104,9 +108,10 @@ class QMainScreen(QMainWindow):
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
+        f = 0 if platform.system() == 'Linux' else 20
         for i in range(1, 8):
-            painter.fillRect(i+40, i+20, 520, 520, QtGui.QColor(10, 10, 10, int(40-1.25*i)))
-        painter.fillRect(40, 20, 520, 520, QtGui.QColor(209, 143, 55))
+            painter.fillRect(i+40, i+20+f, 520, 520, QtGui.QColor(10, 10, 10, int(40-1.25*i)))
+        painter.fillRect(40, 20+f, 520, 520, QtGui.QColor(209, 143, 55))
 
     def fillshadow(self, x, y, side):
         for i in range(1, 4):
@@ -314,8 +319,8 @@ class QMainScreen(QMainWindow):
                 valid = self.game.getValidMoves(self.board, self.turn)
                 rd = QtCore.QRectF(QtCore.QPointF(x * sidex, y * sidey), QtCore.QSizeF(sidex, sidey))
                 rl = QtCore.QRectF(QtCore.QPointF(x * sidex+1, y * sidey+1), QtCore.QSizeF(sidex, sidey))
-                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + (sidex/2)-12, y * sidey + (sidey/2) - 12),
-                                   QtCore.QSizeF((sidey+sidex)/2 - 48, (sidey+sidex)/2 - 48))
+                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + (sidex/2)-7, y * sidey + (sidey/2) - 7),
+                                   QtCore.QSizeF(14, 14))
                 self.scene.addRect(rd, pend)
                 self.scene.addRect(rl, penl)
                 if self.board[y][x] == self.b:
