@@ -13,7 +13,7 @@ from ...utils import *
 from ...NeuralNet import NeuralNet
 
 import argparse
-from .Connect4NNet import Connect4NNet as onnet
+from .Connect4NNet import Connect4NNet as cnnet
 
 args = dotdict({
     'lr': 0.0001,
@@ -22,13 +22,14 @@ args = dotdict({
     'batch_size': 4096,
     'cuda': True,
     'num_channels': 512,
+    'train': False,
 })
 
 
 class NNetWrapper(NeuralNet):
     def __init__(self, game):
         self.graph = tf.get_default_graph()
-        self.nnet = onnet(game, args)
+        self.nnet = cnnet(game, args)
         self.board_x, self.board_y = game.getBoardSize()
         self.action_size = game.getActionSize()
 

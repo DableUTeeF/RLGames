@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('..')
 from ...utils import *
 
@@ -29,18 +30,80 @@ class Connect4NNet:
         self.model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(args.lr))
 
     @staticmethod
-    def conv_block(x, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False)(x)
+    def conv2d_bn(x,
+                  filters,
+                  num_row,
+                  num_col,
+                  padding='same',
+                  strides=(1, 1),
+                  name=None):
+        if name is not None:
+            bn_name = name + '_bn'
+            conv_name = name + '_conv'
+        else:
+            bn_name = None
+            conv_name = None
+        if K.image_data_format() == 'channels_first':
+            bn_axis = 1
+        else:
+            bn_axis = 3
+        x = Conv2D(
+            filters, (num_row, num_col),
+            strides=strides,
+            padding=padding,
+            use_bias=False,
+            name=conv_name)(x)
+        x = BatchNormalization(axis=bn_axis, scale=False, name=bn_name)(x)
+        x = Activation('relu', name=name)(x)
+        return x
+
+    @staticmethod
+    def inception_block(x, kernel):
+        branch1x1 = conv2d_bn(x, kernel, 1, 1)
+
+        branch5x5 = conv2d_bn(x, kernel * 2 // 3, 1, 1)
+        branch5x5 = conv2d_bn(branch5x5, kernel, 5, 5)
+
+        branch3x3dbl = conv2d_bn(x, kernel, 1, 1)
+        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+
+        branch_pool = AveragePooling2D((3, 3), strides=(1, 1), padding='same')(x)
+        branch_pool = conv2d_bn(branch_pool, 32, 1, 1)
+        x = Add()[x, layers.concatenate(
+            [branch1x1, branch5x5, branch3x3dbl, branch_pool])]
+        return x
+
+    @staticmethod
+    def inception_res_block(x, kernel):
+        branch1x1 = conv2d_bn(x, kernel, 1, 1)
+
+        branch5x5 = conv2d_bn(x, kernel * 2 // 3, 1, 1)
+        branch5x5 = conv2d_bn(branch5x5, kernel, 5, 5)
+
+        branch3x3dbl = conv2d_bn(x, kernel, 1, 1)
+        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+
+        branch_pool = AveragePooling2D((3, 3), strides=(1, 1), padding='same')(x)
+        branch_pool = conv2d_bn(branch_pool, 32, 1, 1)
+        x = layers.concatenate(
+            [branch1x1, branch5x5, branch3x3dbl, branch_pool],
+            axis=channel_axis,
+            name='mixed0')
+        return x
+
+    def conv_block(self, x, kernel):
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
         return x
 
-    @staticmethod
-    def res_block(inp, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False)(inp)
+    def res_block(self, inp, kernel):
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(inp)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
-        x = Conv2D(kernel, 3, padding='same', use_bias=False)(x)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(x)
         x = BatchNormalization()(x)
         x = Add()([inp, x])
         x = Activation('relu')(x)

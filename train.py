@@ -21,15 +21,15 @@ args = dotdict({
     'arenaCompare': 100,
     'cpuct': 1,
     'max_processes': 4,
-    'checkpoint': './othello8x8c4/',
+    'checkpoint': './othello8x8c4bot/',
     'load_model': True,
-    'load_folder_file': ('./temp/', 'othelloc4.h5'),
+    'load_folder_file': ('./ai/weights/', 'othelloc4.h5'),
     'numItersForTrainExamplesHistory': 20,
 
 })
 
 if __name__ == "__main__":
-    g = Game(6)
+    g = Game(8)
     nnet = nn(g)
 
     if args.load_model:

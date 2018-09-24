@@ -28,19 +28,17 @@ class OthelloNNet:
         self.model = Model(inputs=self.input_boards, outputs=[self.pi, self.v])
         self.model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(args.lr))
 
-    @staticmethod
-    def conv_block(x, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False)(x)
+    def conv_block(self, x, kernel):
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
         return x
 
-    @staticmethod
-    def res_block(inp, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False)(inp)
+    def res_block(self, inp, kernel):
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(inp)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
-        x = Conv2D(kernel, 3, padding='same', use_bias=False)(x)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(x)
         x = BatchNormalization()(x)
         x = Add()([inp, x])
         x = Activation('relu')(x)
@@ -68,4 +66,3 @@ class OthelloNNet:
         x = Dropout(0.5)(x)
         x = Dense(1, activation='tanh', name='v')(x)
         return x
-
