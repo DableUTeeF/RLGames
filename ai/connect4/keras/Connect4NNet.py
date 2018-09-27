@@ -57,39 +57,36 @@ class Connect4NNet:
         x = Activation('relu', name=name)(x)
         return x
 
-    @staticmethod
-    def inception_block(x, kernel):
-        branch1x1 = conv2d_bn(x, kernel, 1, 1)
+    def inception_block(self, x, kernel):
+        branch1x1 = self.conv2d_bn(x, kernel, 1, 1)
 
-        branch5x5 = conv2d_bn(x, kernel * 2 // 3, 1, 1)
-        branch5x5 = conv2d_bn(branch5x5, kernel, 5, 5)
+        branch5x5 = self.conv2d_bn(x, kernel * 2 // 3, 1, 1)
+        branch5x5 = self.conv2d_bn(branch5x5, kernel, 5, 5)
 
-        branch3x3dbl = conv2d_bn(x, kernel, 1, 1)
-        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
-        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+        branch3x3dbl = self.conv2d_bn(x, kernel, 1, 1)
+        branch3x3dbl = self.conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+        branch3x3dbl = self.conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
 
         branch_pool = AveragePooling2D((3, 3), strides=(1, 1), padding='same')(x)
-        branch_pool = conv2d_bn(branch_pool, 32, 1, 1)
-        x = Add()[x, layers.concatenate(
-            [branch1x1, branch5x5, branch3x3dbl, branch_pool])]
+        branch_pool = self.conv2d_bn(branch_pool, 32, 1, 1)
+        x = add([x, concatenate(
+            [branch1x1, branch5x5, branch3x3dbl, branch_pool])])
         return x
 
-    @staticmethod
-    def inception_res_block(x, kernel):
-        branch1x1 = conv2d_bn(x, kernel, 1, 1)
+    def inception_res_block(self, x, kernel):
+        branch1x1 = self.conv2d_bn(x, kernel, 1, 1)
 
-        branch5x5 = conv2d_bn(x, kernel * 2 // 3, 1, 1)
-        branch5x5 = conv2d_bn(branch5x5, kernel, 5, 5)
+        branch5x5 = self.conv2d_bn(x, kernel * 2 // 3, 1, 1)
+        branch5x5 = self.conv2d_bn(branch5x5, kernel, 5, 5)
 
-        branch3x3dbl = conv2d_bn(x, kernel, 1, 1)
-        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
-        branch3x3dbl = conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+        branch3x3dbl = self.conv2d_bn(x, kernel, 1, 1)
+        branch3x3dbl = self.conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
+        branch3x3dbl = self.conv2d_bn(branch3x3dbl, kernel * 3 // 2, 3, 3)
 
         branch_pool = AveragePooling2D((3, 3), strides=(1, 1), padding='same')(x)
-        branch_pool = conv2d_bn(branch_pool, 32, 1, 1)
-        x = layers.concatenate(
+        branch_pool = self.conv2d_bn(branch_pool, 32, 1, 1)
+        x = concatenate(
             [branch1x1, branch5x5, branch3x3dbl, branch_pool],
-            axis=channel_axis,
             name='mixed0')
         return x
 
