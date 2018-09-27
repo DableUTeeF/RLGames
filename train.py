@@ -1,9 +1,9 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
-from ai.Coach import Coach
-from ai.othello.OthelloGame import OthelloGame as Game
-from ai.othello.keras.NNet import NNetWrapper as nn
+from ai.composite.CompositeCoach import CompositeCoach as Coach
+from ai.composite.CompositeGame import CompositeGame as Game
+from ai.composite.keras.NNet import NNetWrapper as nn
 from ai.utils import *
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
@@ -21,8 +21,8 @@ args = dotdict({
     'arenaCompare': 100,
     'cpuct': 1,
     'max_processes': 4,
-    'checkpoint': './othello8x8c4bot/',
-    'load_model': True,
+    'checkpoint': './composite/',
+    'load_model': False,
     'load_folder_file': ('./ai/weights/', 'othelloc4.h5'),
     'numItersForTrainExamplesHistory': 20,
 

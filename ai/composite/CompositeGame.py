@@ -11,3 +11,6 @@ class CompositeGame(Game):
 
     def getActionSize(self):
         return self.games[0].getActionSize(), self.games[1].getActionSize()
+
+    def getBoardSize(self):
+        return self.games[0].getBoardSize()

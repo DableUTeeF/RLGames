@@ -6,8 +6,14 @@ from keras.optimizers import *
 class CompositeNNet:
     def __init__(self, game, args):
         # game params
-        self.board_x, self.board_y = game.getBoardSize()
-        self.action_size = game.getActionSize()
+        try:
+            self.board_x, self.board_y = game.getBoardSize()
+        except AttributeError:
+            self.board_x, self.board_y = game[0].getBoardSize()
+        try:
+            self.action_size = [game[0].getActionSize(), game[1].getActionSize()]
+        except TypeError:
+            self.action_size = game.getActionSize()
         self.args = args
 
         # Neural Net
@@ -29,16 +35,16 @@ class CompositeNNet:
         self.model = [self.c4model, self.othmodel]
 
     def conv_block(self, x, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(x)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
         return x
 
     def res_block(self, inp, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(inp)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(inp)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
-        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(x)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(x)
         x = BatchNormalization()(x)
         x = Add()([inp, x])
         x = Activation('relu')(x)

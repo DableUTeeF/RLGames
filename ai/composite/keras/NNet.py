@@ -49,7 +49,7 @@ class NNetWrapper:
         with self.graph.as_default():
             # run
             self.nnet.model[gindex]._make_predict_function()
-            pi, v = self.nnet.model.predict(board)
+            pi, v = self.nnet.model[gindex].predict(board)
 
         return pi[0], v[0]
 

@@ -27,11 +27,11 @@ class CompositeCoach:
         self.games = game
         self.game = self.games.games
         self.nnet = nnet
-        self.pnet = self.nnet.__class__(self.game)  # the competitor network
+        self.pnet = self.nnet.__class__(self.games)  # the competitor network
         self.args = args
         self.curPlayer = [0, 0]
-        self.mcts = [MCTS(self.game[0], self.nnet[0], self.args, 0),
-                     MCTS(self.game[1], self.nnet[1], self.args, 1)]
+        self.mcts = [MCTS(self.game[0], self.nnet, self.args, 0),
+                     MCTS(self.game[1], self.nnet, self.args, 1)]
         self.trainExamplesHistory = [[], []]  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
