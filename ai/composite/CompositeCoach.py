@@ -132,11 +132,13 @@ class CompositeCoach:
                     trainExamples[gidx].extend(e)
                 shuffle(trainExamples[gidx])
             with ThreadPoolExecutor() as executor:
+                self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
                 executor.submit(self.saveTrainExamples)
 
             # training new network, keeping a copy of the old one
-            self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
-            self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            self.pnet.nnet.model[0].set_weights(self.nnet.nnet.model[0].get_weights())
+            self.pnet.nnet.model[1].set_weights(self.nnet.nnet.model[1].get_weights())
+            # self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             self.nnet.train(trainExamples)
             pwins, nwins, draws = [0, 0], [0, 0], [0, 0]
             gname = ["Connect4", "Othello"]

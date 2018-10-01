@@ -2,7 +2,7 @@ from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
 
-TPU_WORKER = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+# TPU_WORKER = 'grpc://' + os.environ['COLAB_TPU_ADDR']
 
 
 class CompositeNNet:
