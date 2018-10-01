@@ -91,16 +91,16 @@ class Connect4NNet:
         return x
 
     def conv_block(self, x, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(x)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
         return x
 
     def res_block(self, inp, kernel):
-        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(inp)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(inp)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
-        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.trainable)(x)
+        x = Conv2D(kernel, 3, padding='same', use_bias=False, trainable=self.args.train)(x)
         x = BatchNormalization()(x)
         x = Add()([inp, x])
         x = Activation('relu')(x)

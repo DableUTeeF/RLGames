@@ -2,6 +2,8 @@ from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
 
+TPU_WORKER = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+
 
 class CompositeNNet:
     def __init__(self, game, args):
@@ -21,17 +23,25 @@ class CompositeNNet:
 
         x = Reshape((self.board_x, self.board_y, 1))(self.input_boards)
         x = self.conv_block(x, 256)
-        for _ in range(4):
+        for _ in range(8):
             x = self.res_block(x, 256)
         self.c4pi = self.policy_head(x, self.action_size[0])
         self.c4v = self.value_head(x)
         self.c4model = Model(inputs=self.input_boards, outputs=[self.c4pi, self.c4v])
         self.c4model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(args.lr))
+        # self.c4model = tf.contrib.tpu.keras_to_tpu_model(
+        #     self.c4model,
+        #     strategy=tf.contrib.tpu.TPUDistributionStrategy(
+        #         tf.contrib.cluster_resolver.TPUClusterResolver(TPU_WORKER)))
 
         self.othpi = self.policy_head(x, self.action_size[1])
         self.othv = self.value_head(x)
         self.othmodel = Model(inputs=self.input_boards, outputs=[self.othpi, self.othv])
         self.othmodel.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(args.lr))
+        # self.othmodel = tf.contrib.tpu.keras_to_tpu_model(
+        #     self.othmodel,
+        #     strategy=tf.contrib.tpu.TPUDistributionStrategy(
+        #         tf.contrib.cluster_resolver.TPUClusterResolver(TPU_WORKER)))
         self.model = [self.c4model, self.othmodel]
 
     def conv_block(self, x, kernel):

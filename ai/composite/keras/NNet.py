@@ -12,7 +12,7 @@ args = dotdict({
     'lr': 0.0001,
     'dropout': 0.3,
     'epochs': 1,
-    'batch_size': 4096,
+    'batch_size': 1024,
     'cuda': True,
     'num_channels': 512,
     'train': False,
@@ -30,12 +30,16 @@ class NNetWrapper:
         """
         examples: list of list of examples, each example is of form (board, pi, v)
         """
-        for i in range(2):
-            input_boards, target_pis, target_vs = list(zip(*examples[i]))
+        a = int(np.round(np.random.rand()))
+        g = ['Connect4', 'Othello']
+        for _ in range(2):
+            print(f'training {g[a]}')
+            input_boards, target_pis, target_vs = list(zip(*examples[a]))
             input_boards = np.asarray(input_boards)
             target_pis = np.asarray(target_pis)
             target_vs = np.asarray(target_vs)
-            self.nnet.model[i].fit(x=input_boards, y=[target_pis, target_vs], batch_size=args.batch_size, epochs=args.epochs)
+            self.nnet.model[a].fit(x=input_boards, y=[target_pis, target_vs], batch_size=args.batch_size, epochs=args.epochs)
+            a = ~a
 
     def predict(self, board, gindex):
         """
@@ -60,7 +64,7 @@ class NNetWrapper:
                 print("Checkpoint Directory does not exist! Making directory {}".format(folder))
                 os.mkdir(folder)
             else:
-                print("Checkpoint Directory exists! ")
+                pass
             self.nnet.model[i].save_weights(filepath)
 
     def load_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):

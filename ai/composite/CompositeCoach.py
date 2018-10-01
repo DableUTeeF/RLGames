@@ -21,7 +21,7 @@ class CompositeCoach:
             >>> games = CompositeGame(8)
             >>> nnet = CompositeNNet(games)
             >>> coach = CompositeCoach(games, nnet, args)
-        """
+    """
 
     def __init__(self, game, nnet, args):
         self.games = game
@@ -75,7 +75,7 @@ class CompositeCoach:
             if r != 0:
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer[i]))) for x in trainExamples]
 
-    def learn(self):  # todo: here
+    def learn(self):
         """
         Performs numIters iterations with numEps episodes of self-play in each
         iteration. After every iteration, it retrains neural network with
@@ -85,16 +85,16 @@ class CompositeCoach:
         """
 
         for i in range(1, self.args.numIters + 1):
-            trainExamples = []
+            trainExamples = [[], []]
+            # bookkeeping
+            print('------ITER ' + str(i) + '------')
             for gidx in range(2):
-                # bookkeeping
-                print('------ITER ' + str(i) + '------')
                 # examples of the iteration
                 if not self.skipFirstSelfPlay or i > 1:
                     iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
 
                     eps_time = AverageMeter()
-                    bar = Bar('Self Play', max=self.args.numEps)
+                    bar = Bar(f'{"Othello" if gidx==1 else "Connect4"} Play', max=self.args.numEps)
                     end = time.time()
 
                     for eps in range(self.args.numEps):
@@ -131,13 +131,14 @@ class CompositeCoach:
                 for e in self.trainExamplesHistory[gidx]:
                     trainExamples[gidx].extend(e)
                 shuffle(trainExamples[gidx])
-            self.saveTrainExamples()
+            with ThreadPoolExecutor() as executor:
+                executor.submit(self.saveTrainExamples)
 
             # training new network, keeping a copy of the old one
             self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             self.nnet.train(trainExamples)
-            pwins, nwins, draws = 0, 0, 0
+            pwins, nwins, draws = [0, 0], [0, 0], [0, 0]
             gname = ["Connect4", "Othello"]
             for gidx in range(2):
 
@@ -149,10 +150,13 @@ class CompositeCoach:
                               lambda x: np.argmax(nmcts.getActionProb(x, temp=0)),
                               self.game[gidx])
                 pwin, nwin, draw = arena.playGames(self.args.arenaCompare)
-                pwins, nwins, draws = pwins + pwin, nwins + nwin, draws + draw
+                pwins[gidx], nwins[gidx], draws[gidx] = pwins[gidx] + pwin, nwins[gidx] + nwin, draws[gidx] + draw
 
                 print('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwin, pwin, draw))
-            if pwins + nwins > 0 and float(nwins) / (pwins + nwins) < self.args.updateThreshold:
+            if pwins + nwins > 0 and \
+                    float(sum(nwins)) / (sum(pwins) + sum(nwins)) < self.args.updateThreshold and \
+                    float(nwins[0]) / (pwins[0] + nwins[0]) < self.args.updateThreshold and \
+                    float(nwins[1]) / (pwins[1] + nwins[1]) < self.args.updateThreshold:
                 print('REJECTING NEW MODEL')
                 self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             else:
@@ -169,6 +173,7 @@ class CompositeCoach:
         if not os.path.exists(folder):
             os.makedirs(folder)
         filename = os.path.join(folder, 'last' + ".examples")
+        print('saveExample complete')
         with open(filename, "wb+") as f:
             Pickler(f).dump(self.trainExamplesHistory)
 
