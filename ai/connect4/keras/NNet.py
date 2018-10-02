@@ -22,7 +22,7 @@ args = dotdict({
     'batch_size': 4096,
     'cuda': True,
     'num_channels': 512,
-    'train': False,
+    'train': True,
 })
 
 

@@ -1,6 +1,9 @@
 import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
+# from ai.Coach import Coach
+# from ai.connect4.Connect4Game import Connect4Game as Game
+# from ai.connect4.keras.NNet import NNetWrapper as nn
 from ai.composite.CompositeCoach import CompositeCoach as Coach
 from ai.composite.CompositeGame import CompositeGame as Game
 from ai.composite.keras.NNet import NNetWrapper as nn
@@ -22,8 +25,10 @@ args = dotdict({
     'cpuct': 1,
     'max_processes': 4,
     'checkpoint': '/content/drive/My Drive/RLGames/composite/',
-    'load_model': False,
-    'load_folder_file': ('/content/drive/My Drive/RLGames/ai/weights/', 'othelloc4.h5'),
+    # 'checkpoint': './connect4Oth',
+    'load_model': True,
+    'load_folder_file': ('/content/drive/My Drive/RLGames/composite/', 'best.pth.tar'),
+    # 'load_folder_file': ('./ai/weights/', 'connect4o.h5'),
     'numItersForTrainExamplesHistory': 20,
 
 })

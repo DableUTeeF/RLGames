@@ -9,6 +9,36 @@ import os
 import sys
 from pickle import Pickler, Unpickler
 from random import shuffle
+import threading
+
+
+threadLock = threading.Lock()
+
+
+class SaveExample(threading.Thread):
+    def __init__(self, example, checkpoint, odd):
+        threading.Thread.__init__(self)
+        self.odd = odd
+        self.example = example
+        self.checkpoint = checkpoint
+        self.loaded = 0
+
+    def run(self):
+        threadLock.acquire()
+        self.save()
+        # Free lock to release next thread
+        threadLock.release()
+
+    def save(self):
+        folder = self.checkpoint
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        filename = os.path.join(folder, 'last' + str(self.odd) + ".examples")
+        with open(filename, "wb+") as f:
+            Pickler(f).dump(self.example)
+        self.loaded = 1
+        print("save example complete")
+        return
 
 
 class CompositeCoach:
@@ -131,14 +161,16 @@ class CompositeCoach:
                 for e in self.trainExamplesHistory[gidx]:
                     trainExamples[gidx].extend(e)
                 shuffle(trainExamples[gidx])
-            with ThreadPoolExecutor() as executor:
-                self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
-                executor.submit(self.saveTrainExamples)
-
+            # with ThreadPoolExecutor() as executor:
+            #     executor.submit(self.saveTrainExamples, i % 2 == 0)
+            saves = SaveExample(self.trainExamplesHistory, self.args.checkpoint, i % 2 == 0)
+            saves.start()
             # training new network, keeping a copy of the old one
+            print('Start swap weights')
             self.pnet.nnet.model[0].set_weights(self.nnet.nnet.model[0].get_weights())
             self.pnet.nnet.model[1].set_weights(self.nnet.nnet.model[1].get_weights())
-            # self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            print('Swap weights complete')
             self.nnet.train(trainExamples)
             pwins, nwins, draws = [0, 0], [0, 0], [0, 0]
             gname = ["Connect4", "Othello"]
@@ -155,33 +187,40 @@ class CompositeCoach:
                 pwins[gidx], nwins[gidx], draws[gidx] = pwins[gidx] + pwin, nwins[gidx] + nwin, draws[gidx] + draw
 
                 print('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwin, pwin, draw))
-            if pwins + nwins > 0 and \
-                    float(sum(nwins)) / (sum(pwins) + sum(nwins)) < self.args.updateThreshold and \
-                    float(nwins[0]) / (pwins[0] + nwins[0]) < self.args.updateThreshold and \
-                    float(nwins[1]) / (pwins[1] + nwins[1]) < self.args.updateThreshold:
+            if sum(pwins) + sum(nwins) > 0 and \
+                    float(sum(nwins)) / (sum(pwins) + sum(nwins)) < self.args.updateThreshold:
+                print('REJECTING NEW MODEL')
+                self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            elif float(nwins[0]) / (pwins[0] + nwins[0]) < self.args.updateThreshold*0.8 or \
+                    float(nwins[1]) / (pwins[1] + nwins[1]) < self.args.updateThreshold*0.8:
                 print('REJECTING NEW MODEL')
                 self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             else:
                 print('ACCEPTING NEW MODEL')
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='best.pth.tar')
+            while True:
+                time.sleep(2)
+                if saves.loaded == 1:
+                    break
+            saves.join()
 
     @staticmethod
     def getCheckpointFile(iteration):
         return 'checkpoint_' + str(iteration) + '.pth.tar'
 
-    def saveTrainExamples(self):
+    def saveTrainExamples(self, even):
         folder = self.args.checkpoint
         if not os.path.exists(folder):
             os.makedirs(folder)
-        filename = os.path.join(folder, 'last' + ".examples")
-        print('saveExample complete')
+        filename = os.path.join(folder, 'last' + str(even) + ".examples")
         with open(filename, "wb+") as f:
             Pickler(f).dump(self.trainExamplesHistory)
+        print('saveExample complete')
 
     def loadTrainExamples(self):
         modelFile = os.path.join(self.args.load_folder_file[0], 'last')
-        examplesFile = modelFile + ".examples"
+        examplesFile = modelFile + "False.examples"
         if not os.path.isfile(examplesFile):
             print(examplesFile)
             r = input("File with trainExamples not found. Continue? [y|n]")
