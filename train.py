@@ -1,5 +1,5 @@
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # from ai.Coach import Coach
 # from ai.connect4.Connect4Game import Connect4Game as Game
@@ -24,9 +24,10 @@ args = dotdict({
     'arenaCompare': 50,
     'cpuct': 1,
     'max_processes': 4,
-    'checkpoint': '/content/drive/My Drive/RLGames/composite/',
+    # 'checkpoint': '/content/drive/My Drive/RLGames/composite/',
+    'checkpoint': './composite',
     # 'checkpoint': './connect4Oth',
-    'load_model': True,
+    'load_model': False,
     'load_folder_file': ('/content/drive/My Drive/RLGames/composite/', 'best.pth.tar'),
     # 'load_folder_file': ('./ai/weights/', 'connect4o.h5'),
     'numItersForTrainExamplesHistory': 20,

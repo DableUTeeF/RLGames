@@ -1,8 +1,8 @@
 from ai.Arena import Arena
 from ai.MCTS import MCTS
 from ai.utils import dotdict
-from ai.othello.OthelloGame import OthelloGame as Game
-from ai.othello.keras.NNet import NNetWrapper as nn
+from ai.connect4.Connect4Game import Connect4Game as Game
+from ai.connect4.keras.NNet import NNetWrapper as nn
 import numpy as np
 
 
@@ -23,12 +23,12 @@ if __name__ == '__main__':
         'numItersForTrainExamplesHistory': 20,
 
     })
-    g = Game(8)
+    g = Game(8, 8)
     c4net = nn(g)
-    c4net.load_checkpoint('ai/weights', 'othello_c4b_8x8x17.pth.tar')
+    c4net.load_checkpoint('ai/weights', 'connect4_8x8x5.tar')
     # c4net.load_checkpoint('ai/weights', 'othello_8x8x73_best.pth.tar')
     nnet = nn(g)
-    nnet.load_checkpoint('ai/weights', 'othello_c4_8x8x17.pth.tar')
+    nnet.load_checkpoint('ai/weights', 'connect4_o_8x8x11.pth.tar')
     c4mcts = MCTS(g, c4net, args)
     nmcts = MCTS(g, nnet, args)
     arena = Arena(lambda x: np.argmax(c4mcts.getActionProb(x, temp=0)),

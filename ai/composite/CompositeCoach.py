@@ -187,8 +187,7 @@ class CompositeCoach:
                 pwins[gidx], nwins[gidx], draws[gidx] = pwins[gidx] + pwin, nwins[gidx] + nwin, draws[gidx] + draw
 
                 print('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwin, pwin, draw))
-            if sum(pwins) + sum(nwins) > 0 and \
-                    float(sum(nwins)) / (sum(pwins) + sum(nwins)) < self.args.updateThreshold:
+            if sum(pwins) + sum(nwins) > 0 and float(sum(nwins)) / (sum(pwins) + sum(nwins)) < self.args.updateThreshold:
                 print('REJECTING NEW MODEL')
                 self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             elif float(nwins[0]) / (pwins[0] + nwins[0]) < self.args.updateThreshold*0.8 or \
