@@ -20,7 +20,7 @@ class OthelloNNet:
 
         x = Reshape((self.board_x, self.board_y, 1))(self.input_boards)
         x = self.conv_block(x, 256)
-        for _ in range(4):
+        for _ in range(8):
             x = self.res_block(x, 256)
         self.pi = self.policy_head(x)
         self.v = self.value_head(x)
