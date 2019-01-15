@@ -341,8 +341,8 @@ class QMainScreen(QMainWindow):
                     stone.setScale((min(sidex, sidey)-10)/43)
                     self.scene.addItem(stone)
                     self.WHITE += 1
-                    if [x, y, self.turn] == self.recentMove:
-                        self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
+                    # if [x, y, self.turn] == self.recentMove:
+                    #     self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.black), QtGui.QBrush(QtCore.Qt.black))
                 elif valid[action] == 1 and self.hint:
                     if self.newgamewindow.aiTurnBox.isChecked() or self.AI:
                         stone = QtSvg.QGraphicsSvgItem('img/stone_h0.svg')

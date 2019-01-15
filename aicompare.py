@@ -11,13 +11,13 @@ import numpy as np
 
 if __name__ == '__main__':
     args = dotdict({'numMCTSSims': 25,
-                    'cpuct':  0.1,
-                    'arenaCompare': 1,
+                    'cpuct':  .1,
+                    'arenaCompare': 2,
 
                     })
     # ckpt_o = [41, 43]
-    ckpt_o = [1, 2, 11, 15, 16, 21, 23, 24, 25, 28, 29, 31, 32, 40, 41, 43]
-    ckpt_c = [1, 2, 3, 5, 7, 8, 10, 13, 20, 21, 22, 25, 26, 28, 29, 32, 39, 41, 47]
+    ckpt_o = [16, 24]
+    ckpt_c = [3, 41]
     result = []
     g = Game(8)
     normalnet = nn(g)

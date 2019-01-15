@@ -1,5 +1,6 @@
 from .Bar.bar import Bar, AverageMeter
 import time
+import os
 
 
 class Arena:
@@ -38,6 +39,7 @@ class Arena:
         curPlayer = 1
         board = self.game.getInitBoard()
         it = 0
+        moves = []
         while self.game.getGameEnded(board, curPlayer) == 0:
             it += 1
             if verbose:
@@ -45,13 +47,16 @@ class Arena:
                 print("Turn ", str(it), "Player ", str(curPlayer))
                 self.display(board)
             action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))
-
+            moves.append(action)
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
 
             if valids[action] == 0:
                 print(action)
                 assert valids[action] > 0
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
+        ln = len(os.listdir('moves'))
+        with open(f'moves/{ln}.txt', 'w') as wr:
+            wr.write(str(moves))
         if verbose:
             assert self.display
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
