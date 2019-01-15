@@ -11,7 +11,7 @@ import numpy as np
 
 if __name__ == '__main__':
     args = dotdict({'numMCTSSims': 25,
-                    'cpuct': 0.1,
+                    'cpuct':  0.1,
                     'arenaCompare': 1,
 
                     })
