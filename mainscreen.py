@@ -13,7 +13,7 @@ from PIL import ImageQt, Image
 from ai.MCTS import MCTS
 from ai.othello.OthelloGame import OthelloGame as Og
 from ai.othello.keras.NNet import NNetWrapper as ONNet
-
+import pyscreenshot as screenshot
 from ai.gobang.GobangGame import GobangGame as Gg
 from ai.gobang.keras.NNet import NNetWrapper as GNNet
 
@@ -168,7 +168,7 @@ class QMainScreen(QMainWindow):
         self.AI = not self.AI
         self.refresh()
 
-    def updateText(self, ai=None):
+    def updateText(self, ai=None, user=None):
         bfont = QFont()
         wfont = QFont()
         if self.g == Og:
@@ -201,8 +201,12 @@ class QMainScreen(QMainWindow):
             self.ui.leftPlayerLabel.setText('AI')
             self.ui.rightPlayerLabel.setText('Human')
         else:
-            self.ui.rightPlayerLabel.setText('Human')
-            self.ui.leftPlayerLabel.setText('Human')
+            if user:
+                self.ui.rightPlayerLabel.setText(user[1])
+                self.ui.leftPlayerLabel.setText(user[0])
+            else:
+                self.ui.rightPlayerLabel.setText('Human')
+                self.ui.leftPlayerLabel.setText('Human')
         if self.turn == self.b:
             bfont.setBold(True)
             bfont.setUnderline(True)
@@ -264,7 +268,7 @@ class QMainScreen(QMainWindow):
     def scene_mousePressEvent(self, event):
         sidex = self.bsize[int(self.newgamewindow.boardSizeBox_w.currentText())][1]
         sidey = self.bsize[int(self.newgamewindow.boardSizeBox_h.currentText())][1]
-
+        # self.auto()
         x = int(event.scenePos().x() // sidex)
         y = int(event.scenePos().y() // sidey)
         if self.g == Og or self.g == Gg:
@@ -289,6 +293,30 @@ class QMainScreen(QMainWindow):
                 else:
                     self.turn *= -1
                     QtTest.QTest.qWait(600)
+
+    def auto(self):
+        sidex = self.bsize[int(self.newgamewindow.boardSizeBox_w.currentText())][1]
+        sidey = self.bsize[int(self.newgamewindow.boardSizeBox_h.currentText())][1]
+        names = ['N22-C17', 'C17-N22', 'N34-C17', 'C17-N34', 'N22-C34', 'C34-N22', 'N34-C34', 'C34-N34']
+        for idx, iteration in enumerate(names):
+            os.mkdir(f'cap_3/{iteration}')
+            ls = eval(open(f'moves_3/{idx+8}.txt', 'r').read())
+            self.startgame(None)
+            for i, action in enumerate(ls):
+                action = int(action)
+                self.board, self.turn = self.game.getNextState(self.board, self.turn, action)
+                x = action % 8
+                y = action // 8
+                sr = QtCore.QRectF(QtCore.QPointF(x * sidex + (sidex/2)-7, y * sidey + (sidey/2) - 7),
+                                   QtCore.QSizeF(14, 14))
+                self.refresh()
+                self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.darkBlue), QtGui.QBrush(QtCore.Qt.blue))
+                self.updateText(None, iteration.split('-'))
+                QtTest.QTest.qWait(200)
+                #
+                im = self.grab()
+                im.save(f'cap_3/{iteration}/{i}.jpg')
+                #
 
     def aimove(self):
         action = self.mctsplayer(self.game.getCanonicalForm(self.board, self.turn))
@@ -330,8 +358,8 @@ class QMainScreen(QMainWindow):
                     stone.setScale((min(sidex, sidey)-10)/43)
                     self.scene.addItem(stone)
                     self.BLACK += 1
-                    if [x, y, self.turn] == self.recentMove:
-                        self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
+                    # if [x, y, self.turn] == self.recentMove:
+                    #     self.scene.addEllipse(sr, QtGui.QPen(QtCore.Qt.white), QtGui.QBrush(QtCore.Qt.white))
                 elif self.board[y][x] == self.w:
                     # self.fillshadow(x, y, side)
                     # print(x * sidex + 5, y * sidey + 5)
